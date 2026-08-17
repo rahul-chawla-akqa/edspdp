@@ -34,6 +34,16 @@ module.exports = {
         'import/no-relative-packages': 'off',
         // Logs are the only observability an Adobe I/O Runtime action has.
         'no-console': 'off',
+        /*
+         * ssr/ is a separate package with its own dependencies, installed by
+         * `npm ci --prefix ssr`. AEM Code Sync and the root lint job only install the root
+         * node_modules, so bare specifiers here are unresolvable to them. Relative paths are
+         * still checked, which is what matters: those include the cross-package imports of
+         * scripts/renderers/. Bare specifiers are verified by `npm run test:ssr`, which
+         * fails immediately if a package name is wrong.
+         */
+        'import/no-unresolved': ['error', { ignore: ['^[^./]'] }],
+        'import/no-extraneous-dependencies': 'off',
       },
     },
     {
