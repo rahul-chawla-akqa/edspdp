@@ -12,3 +12,7 @@ jobs:
         node-version: 24
     - run: npm ci
     - run: npm run lint
+    - name: Install overlay composer dependencies
+      run: npm ci --prefix ssr
+    - name: Test overlay composer
+      run: npm run test:ssr

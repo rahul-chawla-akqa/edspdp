@@ -20,6 +20,13 @@
         "name": "keywords",
         "multi": true,
         "label": "Keywords"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "product-id",
+        "label": "Product ID",
+        "description": "Key used by the server-side composer to look up external data for this page."
       }
     ]
   },
@@ -212,6 +219,45 @@
         "value": "",
         "label": "Text",
         "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "product-gallery",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "productId",
+        "label": "Product ID override",
+        "description": "Leave empty to use the page's Product ID or the last URL segment.",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "product-reviews",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "productId",
+        "label": "Product ID override",
+        "description": "Leave empty to use the page's Product ID or the last URL segment.",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "product-specs",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "productId",
+        "label": "Product ID override",
+        "description": "Leave empty to use the page's Product ID or the last URL segment.",
+        "value": ""
       }
     ]
   }

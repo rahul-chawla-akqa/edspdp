@@ -4,6 +4,12 @@
   "version": "1.3.0",
   "description": "Starter project for Adobe Helix",
   "scripts": {
+    "dev": "npm-run-all -p dev:compose dev:aem",
+    "dev:compose": "node dev/compose-server.mjs",
+    "dev:aem": "npx -y @adobe/aem-cli up --no-open --forward-browser-logs --url http://localhost:4000",
+    "test:ssr": "npm --prefix ssr test",
+    "ssr:deploy": "npm --prefix ssr run deploy",
+    "ssr:wire": "node ssr/scripts/wire-overlay.mjs",
     "lint:js": "eslint . --ext .json,.js,.mjs",
     "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
     "lint": "npm run lint:js && npm run lint:css",

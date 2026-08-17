@@ -1,0 +1,22 @@
+{
+  "name": "edspdp-ssr",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BYOM overlay composer: merges AEM-authored pages with external API data server-side",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "build": "aio app build",
+    "deploy": "aio app deploy",
+    "logs": "aio app logs --action compose --tail"
+  },
+  "dependencies": {
+    "node-html-parser": "6.1.13"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1"
+  }
+}

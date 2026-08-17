@@ -1,3 +1,6 @@
 helix-importer-ui
 dompurify.min.js
 *.min.js
+
+# App Builder webpack output; generated bundles are not source.
+dist

@@ -1,7 +1,12 @@
 .hlx/*
 coverage/*
 logs/*
-node_modules/*
+node_modules
+dist
+
+# Secrets: AEM admin tokens and App Builder runtime credentials.
+.env
+.env.local
 
 helix-importer-ui
 .DS_Store

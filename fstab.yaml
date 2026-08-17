@@ -1,3 +1,12 @@
+# NOTE: fstab.yaml cannot express a BYOM content overlay. Registering the server-side
+# composer therefore requires migrating this mountpoint into a site config held by the
+# configuration service, after which this file is no longer the source of truth:
+#
+#   npm run ssr:wire -- check   # inspect what is configured
+#   npm run ssr:wire -- init    # create the site config from these values
+#
+# Keep this file until the site config is confirmed working, then remove it.
+# See docs/ssr-overlay-architecture.md
 mountpoints:
   /:
     url: "https://author-p104103-e1884364.adobeaemcloud.com/bin/franklin.delivery/rahul-chawla-akqa/edspdp/main"

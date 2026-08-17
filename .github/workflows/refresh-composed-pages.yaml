@@ -1,0 +1,41 @@
+# Composed pages carry a snapshot of external API data taken at publish time, so they go
+# stale when that data changes. The refresh webhook action covers changes the source system
+# tells us about; this scheduled run is the safety net for everything else.
+name: Refresh composed pages
+
+on:
+  schedule:
+    # 03:00 UTC daily, outside authoring hours.
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: List the pages that would be refreshed without publishing
+        type: boolean
+        default: false
+
+# Overlapping refreshes would queue competing bulk jobs against the same site.
+concurrency:
+  group: refresh-composed-pages
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+      - name: Refresh
+        env:
+          AEM_ORG: rahul-chawla-akqa
+          AEM_SITE: edspdp
+          AEM_BRANCH: main
+          AEM_ADMIN_TOKEN: ${{ secrets.AEM_ADMIN_TOKEN }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            node ssr/scripts/refresh-composed.mjs --dry-run
+          else
+            node ssr/scripts/refresh-composed.mjs --batch 50
+          fi

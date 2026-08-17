@@ -19,4 +19,36 @@ module.exports = {
     'linebreak-style': ['error', 'unix'], // enforce unix linebreaks
     'no-param-reassign': [2, { props: false }], // allow modifying properties of param
   },
+  overrides: [
+    {
+      // Server-side overlay composer and its local dev harness: Node, not the browser.
+      files: ['ssr/**/*.js', 'ssr/**/*.mjs', 'dev/**/*.mjs'],
+      env: {
+        browser: false,
+        node: true,
+        es2022: true,
+      },
+      rules: {
+        // The composer deliberately imports the same renderers the blocks use, so one
+        // markup implementation serves both the server and the client.
+        'import/no-relative-packages': 'off',
+        // Logs are the only observability an Adobe I/O Runtime action has.
+        'no-console': 'off',
+      },
+    },
+    {
+      files: ['ssr/actions/**/*.js'],
+      rules: {
+        // OpenWhisk supplies request context as __ow_path / __ow_headers.
+        'no-underscore-dangle': 'off',
+      },
+    },
+    {
+      files: ['ssr/src/admin.js'],
+      rules: {
+        // Kept as a named export so more admin operations can be added alongside it.
+        'import/prefer-default-export': 'off',
+      },
+    },
+  ],
 };

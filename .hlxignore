@@ -6,3 +6,10 @@ package.json
 package-lock.json
 test/*
 _*
+
+# Serverless overlay composer, its local dev harness and test content are never served
+# to the public web. Note that scripts/renderers/ is deliberately NOT ignored: the blocks
+# import those modules in the browser for client-side hydration.
+ssr/*
+dev/*
+drafts/*

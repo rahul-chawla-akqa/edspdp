@@ -1,0 +1,44 @@
+application:
+  actions: actions
+  runtimeManifest:
+    packages:
+      edspdp-ssr:
+        license: Apache-2.0
+        actions:
+          compose:
+            function: actions/compose/index.js
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: $LOG_LEVEL
+              PRIMARY_SOURCE_URL: $PRIMARY_SOURCE_URL
+              PRIMARY_SOURCE_SUFFIX: $PRIMARY_SOURCE_SUFFIX
+              FETCH_TIMEOUT_MS: $FETCH_TIMEOUT_MS
+            annotations:
+              # The Admin API calls this anonymously; it must not sit behind Adobe auth.
+              require-adobe-auth: false
+              final: true
+            limits:
+              # The Admin API waits on this during preview and publish, so fail fast.
+              timeout: 10000
+              memorySize: 256
+          refresh:
+            function: actions/refresh/index.js
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              LOG_LEVEL: $LOG_LEVEL
+              AEM_ORG: $AEM_ORG
+              AEM_SITE: $AEM_SITE
+              AEM_BRANCH: $AEM_BRANCH
+              AEM_ADMIN_TOKEN: $AEM_ADMIN_TOKEN
+              REFRESH_SECRET: $REFRESH_SECRET
+              JOB_TIMEOUT_MS: $JOB_TIMEOUT_MS
+            annotations:
+              require-adobe-auth: false
+              final: true
+            limits:
+              # Bulk preview/publish are async jobs the action waits on, so this must exceed
+              # JOB_TIMEOUT_MS (default 120s) for both the preview and publish phases.
+              timeout: 300000
+              memorySize: 256

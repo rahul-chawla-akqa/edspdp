@@ -21,6 +21,13 @@
           "name": "keywords",
           "multi": true,
           "label": "Keywords"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "product-id",
+          "label": "Product ID",
+          "description": "Key used by the server-side composer to look up external data for this page."
         }
       ]
     }
