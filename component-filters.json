@@ -15,7 +15,10 @@
       "hero",
       "cards",
       "columns",
-      "fragment"
+      "fragment",
+      "product-specs",
+      "product-reviews",
+      "product-gallery"
     ]
   },
   {
