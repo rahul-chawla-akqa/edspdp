@@ -21,26 +21,32 @@ function cellText(cell) {
 
 /**
  * Decorates the card gallery mosaic. Each authored row becomes a modal trigger.
+ * Empty items are kept in Universal Editor so newly added cards remain selectable.
  * @param {Element} block
  */
 export default function decorate(block) {
+  const isAuthoring = block.hasAttribute('data-aue-resource')
+    || [...block.children].some((row) => row.hasAttribute('data-aue-resource'));
+
   const cards = [...block.children].reduce((list, row) => {
     const link = row.querySelector('a[href]');
     const href = link?.getAttribute('href');
-    if (!href) return list;
+    if (!href && !isAuthoring) return list;
 
     const textCells = [...row.children].filter(
       (cell) => !cell.querySelector('picture') && !cell.querySelector('a[href]'),
     );
     const overlayTitle = cellText(textCells[0]);
-    const modalTitle = link.getAttribute('title') || overlayTitle;
+    const modalTitle = link?.getAttribute('title') || overlayTitle;
     const picture = row.querySelector('picture');
     const img = picture?.querySelector('img');
 
-    const card = document.createElement('a');
+    const card = document.createElement(href ? 'a' : 'div');
     card.className = `card-gallery-card ${getRatioClass(row)}`;
-    card.href = href;
-    card.dataset.modalTitle = modalTitle;
+    if (href) {
+      card.href = href;
+      card.dataset.modalTitle = modalTitle;
+    }
     if (overlayTitle) card.setAttribute('aria-label', overlayTitle);
 
     moveInstrumentation(row, card);

@@ -24,7 +24,8 @@
             "resourceType": "core/franklin/components/block/v1/block/item",
             "template": {
               "name": "Gallery Card",
-              "model": "card-gallery-item"
+              "model": "card-gallery-item",
+              "classes": "ratio-1-1"
             }
           }
         }
