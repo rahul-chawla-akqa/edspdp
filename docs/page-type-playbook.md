@@ -259,20 +259,31 @@ regexp does not match the real path; the primary source rejected the forwarded c
 
 ---
 
-## 8. Open items
+## 8. Confirmed on a live preview
 
-- **JSON-LD survival is unverified.** The composer emits
-  `<script type="application/ld+json">` into `<head>`, but whether it survives ingestion has
-  not been confirmed on a live preview. Verify with:
+The first composed preview of `/products/1` settled two questions that were previously open.
 
-  ```bash
-  npm run ssr:wire -- preview /products/1
-  curl -s https://main--edspdp--rahul-chawla-akqa.aem.page/products/1 | grep ld+json
-  ```
+**JSON-LD survives ingestion.** The `<script type="application/ld+json">` the composer writes
+into `<head>` arrives intact and parses as valid JSON, so the `Product` schema needs no
+`<meta>`-tag fallback. Re-check after any change to the SEO renderer:
 
-  If it is stripped, the fallback is to emit the fields as `<meta>` tags (which definitely
-  survive) and assemble the JSON-LD in `scripts.js` during the delayed phase. Meta-tag SEO
-  works either way, so only structured data is at risk.
+```bash
+npm run ssr:wire -- preview /products/1
+curl -s https://main--edspdp--rahul-chawla-akqa.aem.page/products/1 | grep ld+json
+```
+
+**Third-party images are pulled into the media bus.** Ingestion downloads the image URLs the
+gallery renderer emits and rewrites them as same-origin `media_*.webp` references wrapped in an
+optimized `<picture>`. This is why `pictureFor` in
+[product-gallery.js](../blocks/product-gallery/product-gallery.js) tests for same origin: on a
+composed page the images are local and the EDS optimization parameters apply, while on a
+client-hydrated page they are still remote and must stay plain. Note the consequence for
+authoring — a composed gallery costs media bus storage per distinct image URL.
+
+## 9. Open items
+
 - **PageSpeed Insights has not been run** against a composed page; it needs one published
   first. Composed pages add no client-side data fetching, so the expectation is parity with
   authored pages, but confirm it rather than assuming.
+- **The overlay points at the Stage runtime workspace.** An overlay applies to publish as well
+  as preview, so deploy to Production and re-point it with `set-overlay` before publishing.

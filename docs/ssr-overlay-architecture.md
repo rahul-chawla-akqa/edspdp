@@ -171,8 +171,10 @@ Note the returned web action URL; it becomes the overlay URL.
 
 ### 6.2 Migrate to the configuration service
 
-**Overlays cannot be configured in `fstab.yaml`** — the configuration service is required. The
-mountpoint currently in [fstab.yaml](../fstab.yaml) has to move into a site config.
+**Overlays cannot be configured in `fstab.yaml`** — the configuration service is required. This
+migration has already been done for `edspdp`: the site config now holds both the primary source
+and the overlay, and [fstab.yaml](../fstab.yaml) is superseded. The steps below are what to run
+for a new site, or to re-point an existing overlay.
 
 Get a Sidekick token (an `aio` CLI or AEM Dev Console token will not work here) by logging in
 at `https://admin.hlx.page/login/rahul-chawla-akqa/edspdp/main`, then:

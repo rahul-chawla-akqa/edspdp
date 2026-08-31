@@ -1,0 +1,216 @@
+{
+  "project": {
+    "id": "4566206088345737451",
+    "name": "841BronzeHeron",
+    "title": "edspdpssr",
+    "org": {
+      "id": "257490",
+      "name": "AKQA EMEA Partner Sandbox",
+      "ims_org_id": "1C3E59175BC9C5840A495D6D@AdobeOrg",
+      "details": {
+        "services": [
+          {
+            "name": "Adobe Express Embed SDK",
+            "code": "CCEmbedCompanionAPI",
+            "type": "adobeid"
+          },
+          {
+            "name": "AEM Assets Author API",
+            "code": "AEM Assets Author API",
+            "type": "adobeid"
+          },
+          {
+            "name": "Adobe Fusion",
+            "code": "Fusion-API",
+            "type": "adobeid"
+          },
+          {
+            "name": "AEM CS Sites Content Management",
+            "code": "AEM CS Sites Content Management",
+            "type": "adobeid"
+          },
+          {
+            "name": "Lightroom Services",
+            "code": "LightroomPartnersSDK",
+            "type": "adobeid"
+          },
+          {
+            "name": "API Mesh for Adobe Developer App Builder",
+            "code": "GraphQLServiceSDK",
+            "type": "adobeid"
+          },
+          {
+            "name": "AEM Content Delivery Network (CDN) API (beta)",
+            "code": "AEM-CDN-API",
+            "type": "adobeid"
+          },
+          {
+            "name": "Frame.io API",
+            "code": "FrameioAPISDK",
+            "type": "adobeid"
+          },
+          {
+            "name": "AEM Content AI",
+            "code": "Content-AI",
+            "type": "adobeid"
+          },
+          {
+            "name": "PDF Embed API",
+            "code": "ViewSDK",
+            "type": "adobeid"
+          },
+          {
+            "name": "Adobe Commerce with Adobe ID",
+            "code": "AdobeCommerceWithAdobeID",
+            "type": "adobeid"
+          },
+          {
+            "name": "AEM Forms Delivery and Runtime API",
+            "code": "FormsDeliveryRuntimeSDK",
+            "type": "adobeid"
+          },
+          {
+            "name": "Adobe Analytics",
+            "code": "AdobeAnalyticsSDK",
+            "type": "analytics"
+          },
+          {
+            "name": "Asset Compute",
+            "code": "AssetComputeSDK",
+            "type": "entp"
+          },
+          {
+            "name": "AEM CS Sites Content Management",
+            "code": "AEM CS Sites Content Management",
+            "type": "entp"
+          },
+          {
+            "name": "I/O Management API",
+            "code": "AdobeIOManagementAPISDK",
+            "type": "entp"
+          },
+          {
+            "name": "Experience Platform API",
+            "code": "McDataServicesSdk",
+            "type": "entp"
+          },
+          {
+            "name": "Smart Content",
+            "code": "MCSmartContentServicesSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Primetime Ad Insertion",
+            "code": "Ad Config Service",
+            "type": "entp"
+          },
+          {
+            "name": "Privacy Service API",
+            "code": "McGdprSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Edge Delivery Services",
+            "code": "nogw-4011f358-2edb-4b01-acb8-3c84e0cbb299",
+            "type": "entp"
+          },
+          {
+            "name": "App Builder Data Services",
+            "code": "AppBuilderDataServicesSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Experience Cloud Setup Automation",
+            "code": "DxSetupAutomationSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Adobe Target",
+            "code": "AdobeTargetSDK",
+            "type": "entp"
+          },
+          {
+            "name": "I/O Events",
+            "code": "CloudIntegrationSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Adobe Analytics",
+            "code": "AdobeAnalyticsSDK",
+            "type": "entp"
+          },
+          {
+            "name": "AEM Content AI",
+            "code": "Content-AI",
+            "type": "entp"
+          },
+          {
+            "name": "Cloud Manager",
+            "code": "CloudManagerSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Adobe Express Review API",
+            "code": "ExpressReviewService",
+            "type": "entp"
+          },
+          {
+            "name": "Adobe Status API",
+            "code": "StatusAPISDK",
+            "type": "entp"
+          },
+          {
+            "name": "Places",
+            "code": "McPlacesSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Globalization Content Service",
+            "code": "gcs-partner",
+            "type": "entp"
+          },
+          {
+            "name": "AEM Content Delivery Network (CDN) API (beta)",
+            "code": "AEM-CDN-API",
+            "type": "entp"
+          },
+          {
+            "name": "Assurance API",
+            "code": "Griffon - Graffias",
+            "type": "entp"
+          },
+          {
+            "name": "AEM Forms Delivery and Runtime API",
+            "code": "FormsDeliveryRuntimeSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Experience Platform Launch API",
+            "code": "McDtmSDK",
+            "type": "entp"
+          },
+          {
+            "name": "Adobe I/O Events for Adobe Commerce",
+            "code": "commerceeventing",
+            "type": "entp"
+          }
+        ]
+      }
+    },
+    "workspace": {
+      "id": "4566206088345779544",
+      "name": "Stage",
+      "title": "Stage",
+      "action_url": "https://257490-841bronzeheron-stage.adobeioruntime.net",
+      "app_url": "https://257490-841bronzeheron-stage.adobeio-static.net",
+      "details": {
+        "credentials": [],
+        "services": [],
+        "events": {
+          "registrations": []
+        },
+        "mesh": {}
+      }
+    }
+  }
+}

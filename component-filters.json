@@ -14,11 +14,18 @@
       "title",
       "hero",
       "cards",
+      "card-gallery",
       "columns",
       "fragment",
       "product-specs",
       "product-reviews",
       "product-gallery"
+    ]
+  },
+  {
+    "id": "card-gallery",
+    "components": [
+      "card-gallery-item"
     ]
   },
   {

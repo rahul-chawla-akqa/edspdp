@@ -147,10 +147,27 @@ async function loadEager(doc) {
 }
 
 /**
+ * Registers document-wide modal openers after LCP.
+ * Dynamic import keeps modal.js and fragment.js off the eager path;
+ * the import is not awaited so remaining lazy work is not blocked.
+ */
+function initModalTriggers() {
+  // Lazy import: fragment.js already imports decorateMain from this file.
+  // eslint-disable-next-line import/no-cycle
+  import('../blocks/modal/modal.js')
+    .then(({ bindModalTriggers }) => bindModalTriggers())
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error('Failed to initialise modal triggers', error);
+    });
+}
+
+/**
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
  */
 async function loadLazy(doc) {
+  initModalTriggers();
   loadHeader(doc.querySelector('header'));
 
   const main = doc.querySelector('main');

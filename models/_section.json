@@ -49,6 +49,7 @@
         "title",
         "hero",
         "cards",
+        "card-gallery",
         "columns",
         "fragment",
         "product-specs",
