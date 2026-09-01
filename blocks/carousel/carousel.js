@@ -1,5 +1,12 @@
+import { moveInstrumentation } from '../../scripts/scripts.js';
+
 function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function isAuthoring(block) {
+  return block.hasAttribute('data-aue-resource')
+    || [...block.children].some((row) => row.hasAttribute('data-aue-resource'));
 }
 
 function getSlides(block) {
@@ -167,6 +174,7 @@ function createSlide(row, slideIndex, carouselId) {
   slide.dataset.slideIndex = slideIndex;
   slide.setAttribute('id', `carousel-${carouselId}-slide-${slideIndex}`);
   slide.classList.add('carousel-slide');
+  moveInstrumentation(row, slide);
 
   row.querySelectorAll(':scope > div').forEach((column, colIdx) => {
     column.classList.add(`carousel-slide-${colIdx === 0 ? 'image' : 'content'}`);
@@ -185,8 +193,13 @@ let carouselId = 0;
 export default async function decorate(block) {
   carouselId += 1;
   block.setAttribute('id', `carousel-${carouselId}`);
+  const authoring = isAuthoring(block);
   const rows = [...block.querySelectorAll(':scope > div')];
   const isSingleSlide = rows.length < 2;
+
+  if (authoring) {
+    block.classList.add('carousel-authoring');
+  }
 
   block.setAttribute('role', 'region');
   block.setAttribute('aria-roledescription', 'Carousel');
@@ -199,7 +212,7 @@ export default async function decorate(block) {
   slidesWrapper.classList.add('carousel-slides');
 
   let slideIndicators;
-  if (!isSingleSlide) {
+  if (!isSingleSlide && !authoring) {
     const slideIndicatorsNav = document.createElement('nav');
     slideIndicatorsNav.setAttribute('aria-label', 'Carousel Slide Controls');
     slideIndicators = document.createElement('ol');
@@ -237,9 +250,9 @@ export default async function decorate(block) {
   block.prepend(container);
 
   const firstSlide = block.querySelector('.carousel-slide');
-  if (firstSlide) updateActiveSlide(firstSlide);
+  if (firstSlide && !authoring) updateActiveSlide(firstSlide);
 
-  if (!isSingleSlide) {
+  if (!isSingleSlide && !authoring) {
     bindEvents(block);
     showSlide(block, 0, 'instant');
   }

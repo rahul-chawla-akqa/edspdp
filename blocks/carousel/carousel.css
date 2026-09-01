@@ -31,6 +31,21 @@
   scroll-snap-type: x mandatory;
 }
 
+/* Stack every slide in Universal Editor so authors can select and edit items. */
+.carousel.carousel-authoring .carousel-slides {
+  flex-direction: column;
+  overflow: visible;
+  scroll-snap-type: none;
+  gap: 16px;
+}
+
+.carousel.carousel-authoring .carousel-slide {
+  flex: none;
+  width: 100%;
+  min-height: 160px;
+  border: 1px dashed rgb(255 255 255 / 35%);
+}
+
 .carousel .carousel-slides::-webkit-scrollbar {
   display: none;
 }
