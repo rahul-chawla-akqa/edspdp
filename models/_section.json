@@ -50,11 +50,13 @@
         "hero",
         "cards",
         "card-gallery",
+        "search-button",
         "columns",
         "fragment",
         "product-specs",
         "product-reviews",
-        "product-gallery"
+        "product-gallery",
+        "carousel"
       ]
     }
   ]

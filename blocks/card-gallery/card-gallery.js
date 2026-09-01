@@ -1,4 +1,5 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
+import { bindOpenModalOnClick } from '../../scripts/open-modal.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
 
 const RATIO_CLASSES = ['ratio-1-1', 'ratio-2-1', 'ratio-1-2'];
@@ -46,6 +47,7 @@ export default function decorate(block) {
     if (href) {
       card.href = href;
       card.dataset.modalTitle = modalTitle;
+      bindOpenModalOnClick(card);
     }
     if (overlayTitle) card.setAttribute('aria-label', overlayTitle);
 

@@ -10,6 +10,7 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
+import { bindOpenModalOnClick } from './open-modal.js';
 
 /**
  * Moves all the attributes from a given elmenet to another given element.
@@ -106,6 +107,8 @@ export function decorateButtons(main) {
       a.classList.add('secondary');
       em.replaceWith(a);
     }
+
+    bindOpenModalOnClick(a);
   });
 }
 
@@ -147,7 +150,7 @@ async function loadEager(doc) {
 }
 
 /**
- * Registers document-wide modal openers after LCP.
+ * Subscribes the modal module to `eds:open-modal` after LCP.
  * Dynamic import keeps modal.js and fragment.js off the eager path;
  * the import is not awaited so remaining lazy work is not blocked.
  */

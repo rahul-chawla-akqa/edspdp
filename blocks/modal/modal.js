@@ -1,12 +1,14 @@
 import {
   buildBlock, decorateBlock, loadBlock, loadCSS,
 } from '../../scripts/aem.js';
+import { OPEN_MODAL_EVENT } from '../../scripts/open-modal.js';
 
 /*
   This is not a traditional block, so there is no decorate function.
-  bindModalTriggers() is called once from scripts.js (lazy phase) and listens
-  document-wide so any block can open a modal. Other code can also call
-  createModal() and openModal() directly.
+  bindModalTriggers() is called once from scripts.js (lazy phase) and
+  subscribes to `eds:open-modal`. Publishers (blocks, decorateButtons)
+  dispatch that event; they must not import this file. Other code can still
+  call createModal() and openModal() directly.
 
   openModal() keeps a single active instance: calling it again while open only
   swaps header/content and wrapper classes (e.g. width variants) — close/outside
@@ -193,111 +195,34 @@ export async function openModal(fragmentUrl, options) {
   activeModal.showModal();
 }
 
-/**
- * Elements matching this selector open a modal.
- * Supported data attributes on the trigger:
- * - `href` / path: fragment to load
- * - `data-modal-title`: modal header text
- * - `data-modal-class`: space-separated classes on the modal wrapper
- *   (e.g. `modal-wide` → 80% width; default is 50%, transitions smoothly)
- *
- * @example
- * <!-- default 50% width -->
- * <a class="button secondary" href="/modals/details" data-modal-title="Details">Open</a>
- *
- * <!-- 80% width; if opened from inside an existing modal, width animates 50% → 80% -->
- * <a class="button secondary" href="/modals/compare" data-modal-title="Compare"
- *    data-modal-class="modal-wide">Compare</a>
- */
-const MODAL_TRIGGER_SELECTOR = '.button.secondary, a.card-gallery-card';
-
-let triggersBound = false;
+let subscribed = false;
 let opening = false;
 
 /**
- * Resolves a same-origin fragment path from a trigger element.
- * @param {Element} trigger
- * @returns {string|null}
+ * @param {CustomEvent} event
  */
-function getModalPath(trigger) {
-  const href = trigger.getAttribute('href');
-  if (!href || href.startsWith('#')) return null;
-
-  let path = null;
-  try {
-    const url = new URL(href, window.location.href);
-    if (url.origin !== window.location.origin) return null;
-    path = url.pathname;
-  } catch {
-    path = href.startsWith('/') ? href : null;
-  }
-  if (!path) return null;
-
-  // Opt-in: /modals/ URLs, or an explicit data-modal* attribute.
-  // Other secondary buttons (e.g. 404 "Go home") must keep navigating.
-  const optedIn = path.startsWith('/modals/')
-    || trigger.hasAttribute('data-modal')
-    || trigger.hasAttribute('data-modal-title')
-    || trigger.hasAttribute('data-modal-class');
-  if (!optedIn) return null;
-
-  return path;
-}
-
-/**
- * Reads wrapper classes from the trigger for modal UI variants.
- * @param {Element} trigger
- * @returns {string[]}
- */
-function getModalClasses(trigger) {
-  const raw = trigger.getAttribute('data-modal-class') || '';
-  return raw.split(/\s+/).map((c) => c.trim()).filter(Boolean);
-}
-
-/**
- * Click handler via event delegation — works for triggers present at
- * page load and for HTML injected later (including inside an open modal).
- * @param {MouseEvent} event
- */
-async function onDocumentClick(event) {
-  const trigger = event.target.closest(MODAL_TRIGGER_SELECTOR);
-  if (!trigger) return;
-  if (event.defaultPrevented) return;
-  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-  if (trigger.getAttribute('aria-disabled') === 'true') return;
-
-  const path = getModalPath(trigger);
-  if (!path) return;
-
-  event.preventDefault();
+async function onOpenModalEvent(event) {
+  const { fragmentUrl, headerText, classes } = event.detail || {};
+  if (!fragmentUrl) return;
   if (opening) return;
 
-  const headerText = trigger.dataset.modalTitle
-    || trigger.getAttribute('title')
-    || trigger.textContent.trim();
-
   opening = true;
-  trigger.setAttribute('aria-busy', 'true');
   try {
-    await openModal(path, {
-      headerText,
-      classes: getModalClasses(trigger),
-    });
+    await openModal(fragmentUrl, { headerText, classes });
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to open modal', error);
   } finally {
     opening = false;
-    trigger.removeAttribute('aria-busy');
   }
 }
 
 /**
- * Binds modal triggers once for the lifetime of the page.
- * Safe to call more than once. Does not fetch CSS or fragments until a click.
+ * Subscribes once to `eds:open-modal`. Safe to call more than once.
+ * Does not fetch CSS or fragments until an open is requested.
  */
 export function bindModalTriggers() {
-  if (triggersBound) return;
-  triggersBound = true;
-  document.addEventListener('click', onDocumentClick);
+  if (subscribed) return;
+  subscribed = true;
+  document.addEventListener(OPEN_MODAL_EVENT, onOpenModalEvent);
 }

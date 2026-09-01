@@ -55,6 +55,17 @@ module.exports = {
       },
     },
     {
+      files: ['tests/**/*.js', 'playwright.config.js', 'lighthouserc.js'],
+      env: {
+        browser: false,
+        node: true,
+      },
+      rules: {
+        'import/no-extraneous-dependencies': 'off',
+        'import/no-unresolved': 'off',
+      },
+    },
+    {
       files: ['ssr/src/admin.js'],
       rules: {
         // Kept as a named export so more admin operations can be added alongside it.

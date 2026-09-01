@@ -228,6 +228,32 @@
     ]
   },
   {
+    "id": "carousel-item",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Alt Text",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "name": "text",
+        "value": "",
+        "label": "Text",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "columns",
     "fields": [
       {
@@ -318,6 +344,49 @@
         "label": "Product ID override",
         "description": "Leave empty to use the page's Product ID or the last URL segment.",
         "value": ""
+      }
+    ]
+  },
+  {
+    "id": "search-button",
+    "fields": [
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Fragment Path",
+        "description": "Content loaded in the modal when the search button is clicked"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkText",
+        "label": "Text",
+        "description": "Label shown in the search bar"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkTitle",
+        "label": "Modal Title",
+        "description": "Header shown when the search button opens a modal"
+      },
+      {
+        "component": "select",
+        "name": "classes",
+        "label": "Modal Width",
+        "valueType": "string",
+        "value": "",
+        "options": [
+          {
+            "name": "Standard",
+            "value": ""
+          },
+          {
+            "name": "Wide",
+            "value": "wide"
+          }
+        ]
       }
     ]
   }
