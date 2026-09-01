@@ -3,13 +3,20 @@ import { bindOpenModalOnClick } from '../../scripts/open-modal.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
 
 const RATIO_CLASSES = ['ratio-1-1', 'ratio-2-1', 'ratio-1-2'];
+const DEFAULT_RATIO = RATIO_CLASSES[0];
 
 /**
+ * Resolves a single exclusive ratio class.
+ * Authoring can leave the template default (`ratio-1-1`) on the row after another
+ * ratio is selected; prefer the last non-default ratio in that case.
  * @param {Element} row
  * @returns {string}
  */
 function getRatioClass(row) {
-  return RATIO_CLASSES.find((className) => row.classList.contains(className)) || 'ratio-1-1';
+  const applied = [...row.classList].filter((className) => RATIO_CLASSES.includes(className));
+  if (!applied.length) return DEFAULT_RATIO;
+  const authored = applied.filter((className) => className !== DEFAULT_RATIO);
+  return (authored.length ? authored : applied).at(-1);
 }
 
 /**
