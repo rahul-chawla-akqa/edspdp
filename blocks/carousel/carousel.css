@@ -1,3 +1,6 @@
+/* stylelint-disable selector-class-pattern */
+/* stylelint-disable no-descending-specificity */
+
 .carousel {
   --carousel-bg: #121212;
   --carousel-nav-bg: #2a2a2a;
