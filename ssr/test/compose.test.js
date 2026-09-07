@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import compose, { OUTCOME, RENDERED_CLASS } from '../src/compose.js';
+import compose, { FEATURES_PATH, OUTCOME, RENDERED_CLASS } from '../src/compose.js';
 import { matchRoute, normalizePath } from '../src/routes.js';
 import {
-  authoredPage, placeholder, product, stubs,
+  authoredPage, featuresPage, placeholder, product, stubs,
 } from './fixtures.js';
 
 const allBlocks = [
@@ -172,6 +172,57 @@ test('meta content is fully escaped, including bare ampersands', async () => {
   assert.match(body, /property="og:title" content="Marks &amp; Spencer &lt;b&gt;Sale&lt;\/b&gt;"/);
   // A bare "&" would be invalid markup and can be mangled during ingestion.
   assert.ok(!/content="[^"]*&(?!amp;|lt;|gt;|quot;|#39;)/.test(body), 'no unescaped ampersands');
+});
+
+test('a missing features page leaves reviews enabled', async () => {
+  const html = authoredPage({ blocks: allBlocks });
+  const { status, body, stub } = await composePage(html, {
+    pages: {
+      '/products/1': { status: 200, html },
+      [FEATURES_PATH]: { status: 404, html: '' },
+    },
+  });
+  assert.equal(status, 200);
+  assert.ok(body.includes('class="product-reviews api-rendered"'));
+  assert.ok(body.includes('Eleanor Collins'));
+  assert.ok(body.includes('AggregateRating'));
+  assert.deepEqual(stub.calls.primary, ['/products/1', FEATURES_PATH]);
+});
+
+test('disabled product reviews are stripped and omitted from JSON-LD', async () => {
+  const html = authoredPage({ blocks: allBlocks });
+  const {
+    status, outcome, body, stub,
+  } = await composePage(html, {
+    pages: {
+      '/products/1': { status: 200, html },
+      [FEATURES_PATH]: { status: 200, html: featuresPage('false') },
+    },
+  });
+  assert.equal(status, 200);
+  assert.equal(outcome, OUTCOME.COMPOSED);
+  assert.ok(!body.includes('product-reviews'), 'reviews block is removed');
+  assert.ok(!body.includes('Eleanor Collins'));
+  assert.ok(!body.includes('AggregateRating'), 'schema does not advertise reviews');
+  assert.match(body, /class="product-specs api-rendered"/);
+  assert.match(body, /class="product-gallery api-rendered"/);
+  assert.equal(stub.calls.data.length, 1);
+});
+
+test('a reviews-only page still composes when reviews are disabled', async () => {
+  const html = authoredPage({ blocks: placeholder('product-reviews') });
+  const {
+    status, outcome, body, stub,
+  } = await composePage(html, {
+    pages: {
+      '/products/1': { status: 200, html },
+      [FEATURES_PATH]: { status: 200, html: featuresPage('false') },
+    },
+  });
+  assert.equal(status, 200);
+  assert.equal(outcome, OUTCOME.COMPOSED);
+  assert.ok(!body.includes('product-reviews'));
+  assert.deepEqual(stub.calls.data, []);
 });
 
 test('values from the API are escaped into the markup', async () => {

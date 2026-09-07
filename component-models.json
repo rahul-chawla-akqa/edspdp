@@ -273,6 +273,29 @@
     ]
   },
   {
+    "id": "feature-flags",
+    "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "productReviews",
+        "label": "Product reviews",
+        "description": "Site-wide switch. After changing this, publish this page and refresh composed product pages.",
+        "value": "true",
+        "options": [
+          {
+            "name": "Enabled",
+            "value": "true"
+          },
+          {
+            "name": "Disabled",
+            "value": "false"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "fragment",
     "fields": [
       {

@@ -6,7 +6,7 @@
  *   replace - the API is authoritative (a product's name and description are its SEO copy)
  *   fill    - only written when the authored page left it empty
  */
-export default function renderProductSeo(data) {
+export default function renderProductSeo(data, { productReviews = true } = {}) {
   if (!data) return null;
 
   const title = data.title || '';
@@ -33,7 +33,7 @@ export default function renderProductSeo(data) {
     sku: data.sku,
     image: Array.isArray(data.images) && data.images.length ? data.images : undefined,
     brand: data.brand ? { '@type': 'Brand', name: data.brand } : undefined,
-    aggregateRating: data.rating && data.reviews && data.reviews.length
+    aggregateRating: productReviews && data.rating && data.reviews && data.reviews.length
       ? {
         '@type': 'AggregateRating',
         ratingValue: data.rating,

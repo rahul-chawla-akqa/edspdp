@@ -10,6 +10,12 @@ import { matchRoute, normalizePath } from './routes.js';
  */
 export const RENDERED_CLASS = 'api-rendered';
 
+/** Author-managed site flags. Fetched only when a PDP contains a product-reviews block. */
+export const FEATURES_PATH = '/config/features';
+
+const REVIEWS_BLOCK = 'product-reviews';
+const DISABLED = /^(false|off|disabled|0|no)$/i;
+
 /**
  * Every non-composed outcome resolves to a 404, which makes the Admin API fall back to the
  * primary content source. That keeps the failure path byte-identical to having no overlay
@@ -28,6 +34,29 @@ const DOCTYPE = /^\s*<!doctype[^>]*>\s*/i;
 
 function miss(outcome) {
   return { status: 404, outcome, body: '' };
+}
+
+function composed(root, hadDoctype, route) {
+  const body = `${hadDoctype ? '<!DOCTYPE html>\n' : ''}${root.toString()}`;
+  return {
+    status: 200,
+    outcome: OUTCOME.COMPOSED,
+    body,
+    headers: {
+      'content-type': 'text/html; charset=utf-8',
+      'cache-control': route.cacheControl || 'public, max-age=300',
+    },
+  };
+}
+
+/** Fail-open: missing block or unrecognised value leaves reviews enabled. */
+export function productReviewsEnabled(html) {
+  if (!html) return true;
+  const block = parse(html.replace(DOCTYPE, '')).querySelector('.feature-flags');
+  if (!block) return true;
+  const value = block.textContent.trim();
+  if (!value) return true;
+  return !DISABLED.test(value);
 }
 
 /** Reads the override key an author may have typed into the placeholder block. */
@@ -117,11 +146,11 @@ export default async function compose({
   const root = parse(primary.html.replace(DOCTYPE, ''));
   const head = root.querySelector('head');
 
-  const targets = Object.entries(route.placeholders)
+  let targets = Object.entries(route.placeholders)
     .map(([className, rendererName]) => ({
       className,
       renderer: blockRenderers[rendererName],
-      elements: root.querySelectorAll(`.${className}`),
+      elements: [...root.querySelectorAll(`.${className}`)],
     }))
     .filter((target) => target.elements.length);
 
@@ -132,6 +161,23 @@ export default async function compose({
     logger.error(`compose: no renderer registered for ${unknown.map((t) => t.className).join(', ')}`);
     return miss(OUTCOME.NO_PLACEHOLDER);
   }
+
+  let reviewsOn = true;
+  const reviews = targets.find((target) => target.className === REVIEWS_BLOCK);
+  if (reviews) {
+    const features = await fetchPrimary(FEATURES_PATH);
+    reviewsOn = features && features.status === 200
+      ? productReviewsEnabled(features.html)
+      : true;
+    if (!reviewsOn) {
+      reviews.elements.forEach((element) => element.remove());
+      targets = targets.filter((target) => target.className !== REVIEWS_BLOCK);
+    }
+  }
+
+  // Stripping reviews must still ingest HTML, otherwise Admin falls back to the authored
+  // placeholder and client hydration would show reviews again.
+  if (!targets.length) return composed(root, hadDoctype, route);
 
   const allElements = targets.flatMap((target) => target.elements);
   const key = blockOverrideKey(allElements) || metaKey(head, route.metaKey) || matchKey;
@@ -160,17 +206,12 @@ export default async function compose({
   if (!filled) return miss(OUTCOME.DATA_UNAVAILABLE);
 
   if (route.seo && seoRenderers[route.seo]) {
-    applySeo(head, seoRenderers[route.seo](data), route.jsonLd !== false);
+    applySeo(
+      head,
+      seoRenderers[route.seo](data, { productReviews: reviewsOn }),
+      route.jsonLd !== false,
+    );
   }
 
-  const body = `${hadDoctype ? '<!DOCTYPE html>\n' : ''}${root.toString()}`;
-  return {
-    status: 200,
-    outcome: OUTCOME.COMPOSED,
-    body,
-    headers: {
-      'content-type': 'text/html; charset=utf-8',
-      'cache-control': route.cacheControl || 'public, max-age=300',
-    },
-  };
+  return composed(root, hadDoctype, route);
 }

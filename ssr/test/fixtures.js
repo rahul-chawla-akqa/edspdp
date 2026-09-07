@@ -40,6 +40,13 @@ export function placeholder(className, authoredId = '') {
         </div>`;
 }
 
+/** Markup for the author-managed flags page at /config/features. */
+export function featuresPage(productReviews = 'true') {
+  return authoredPage({
+    blocks: placeholder('feature-flags', productReviews),
+  });
+}
+
 export const product = {
   id: 1,
   title: 'Essence Mascara Lash Princess',
@@ -80,12 +87,13 @@ export const product = {
 };
 
 /** Records calls so tests can assert the composer's short-circuit behaviour. */
-export function stubs({ primary, data = product } = {}) {
+export function stubs({ primary, pages, data = product } = {}) {
   const calls = { primary: [], data: [] };
   return {
     calls,
     fetchPrimary: async (path) => {
       calls.primary.push(path);
+      if (pages && Object.prototype.hasOwnProperty.call(pages, path)) return pages[path];
       return primary || { status: 404, html: '' };
     },
     fetchData: async (endpoint) => {

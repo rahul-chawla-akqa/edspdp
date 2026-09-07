@@ -240,6 +240,24 @@ for a request that later fails authentication — a `202` says nothing about whe
 updated. [ssr/src/admin.js](../ssr/src/admin.js) therefore polls each job to completion and
 only publishes when preview verifiably succeeded. Do not simplify that away.
 
+### Site-wide product reviews switch
+
+Authors control whether composed PDPs include the product-reviews block from
+`/config/features`:
+
+1. Create that page in Universal Editor and add the **Feature Flags** block.
+2. Set **Product reviews** to Enabled or Disabled and publish the config page.
+3. Refresh composed product pages (commands above). Publishing the config page alone does
+   not rewrite live PDPs.
+
+When Disabled, compose removes `.product-reviews` from the ingested HTML and omits
+`aggregateRating` from JSON-LD. A missing or unreadable config page leaves reviews on.
+Universal Editor and overlay fallback still hydrate reviews from the API; the kill switch
+applies to published composed pages after refresh.
+
+Locally, `drafts/config/features.html` stands in for the config page (`true` / `false` in
+the feature-flags row).
+
 ### Diagnosing a page that is not composing
 
 ```bash

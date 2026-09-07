@@ -21,7 +21,8 @@
       "product-specs",
       "product-reviews",
       "product-gallery",
-      "carousel"
+      "carousel",
+      "feature-flags"
     ]
   },
   {
