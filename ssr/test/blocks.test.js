@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 import { JSDOM } from 'jsdom';
 
 import compose from '../src/compose.js';
+import { wrapProductJson } from '../../scripts/product-json.js';
 import { authoredPage, placeholder, product } from './fixtures.js';
 
 const BLOCKS = ['product-specs', 'product-gallery', 'product-reviews'];
@@ -262,6 +263,25 @@ test('a server-composed block does not re-fetch on the client', async () => {
     const decorate = await loadBlock('product-specs', 'nofetch');
     await decorate(env.document.querySelector('.product-specs'));
     assert.deepEqual(requested, [], 'api-rendered blocks skip hydration entirely');
+  } finally {
+    env.restore();
+  }
+});
+
+test('an unfilled block on an edge PDP hydrates from EDS JSON', async () => {
+  const requested = [];
+  const fetchImpl = async (url) => {
+    requested.push(String(url));
+    return { ok: true, json: async () => wrapProductJson(product) };
+  };
+  const html = authoredPage({ blocks: placeholder('product-specs') });
+  const env = installDom(html, { fetchImpl, path: '/product-detail/2005' });
+  try {
+    const decorate = await loadBlock('product-specs', 'eds-json');
+    const block = env.document.querySelector('.product-specs');
+    await decorate(block);
+    assert.deepEqual(requested, ['/product-data/2005.json']);
+    assert.match(block.textContent, /Essence/);
   } finally {
     env.restore();
   }

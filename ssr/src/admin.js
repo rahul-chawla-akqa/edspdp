@@ -119,10 +119,12 @@ async function runJob(options) {
  *
  * Publish is skipped when preview did not verifiably succeed: promoting a path whose preview
  * never refreshed would push the previous snapshot live and hide the failure.
+ * Set `publish: false` to preview only.
  */
 export async function refreshPaths(options) {
   const preview = await runJob({ ...options, operation: 'preview' });
   if (!succeeded(preview)) return { preview, live: null, ok: false };
+  if (options.publish === false) return { preview, live: null, ok: true };
   const live = await runJob({ ...options, operation: 'live' });
   return { preview, live, ok: succeeded(live) };
 }

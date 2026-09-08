@@ -1,7 +1,8 @@
 import { parse } from 'node-html-parser';
+import { unwrapProductJson, wrapProductJson } from '../../scripts/product-json.js';
 import { blockRenderers, seoRenderers } from '../../scripts/renderers/index.js';
 import { escapeHtml } from '../../scripts/renderers/html.js';
-import { matchRoute, normalizePath } from './routes.js';
+import { matchRoute, normalizePath, resolveEndpoint } from './routes.js';
 
 /*
  * Marker class added to blocks the composer filled. Block JS checks for it to decide
@@ -44,6 +45,18 @@ function composed(root, hadDoctype, route) {
     body,
     headers: {
       'content-type': 'text/html; charset=utf-8',
+      'cache-control': route.cacheControl || 'public, max-age=300',
+    },
+  };
+}
+
+function jsonResponse(sheet, route) {
+  return {
+    status: 200,
+    outcome: OUTCOME.COMPOSED,
+    body: JSON.stringify(sheet),
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
       'cache-control': route.cacheControl || 'public, max-age=300',
     },
   };
@@ -137,7 +150,20 @@ export default async function compose({
   if (!matched) return miss(OUTCOME.NO_ROUTE);
   const { route, matchKey } = matched;
 
-  const primary = await fetchPrimary(contentPath);
+  if (route.kind === 'json') {
+    if (!matchKey) return miss(OUTCOME.NO_KEY);
+    const endpoint = resolveEndpoint(route, matchKey);
+    const raw = await fetchData(endpoint);
+    const product = unwrapProductJson(raw) || (raw && raw.id != null ? raw : null);
+    const sheet = wrapProductJson(product);
+    if (!sheet) {
+      logger.error(`compose: no data for ${contentPath} from ${endpoint}`);
+      return miss(OUTCOME.DATA_UNAVAILABLE);
+    }
+    return jsonResponse(sheet, route);
+  }
+
+  const primary = await fetchPrimary(route.templatePath || contentPath);
   if (!primary || primary.status !== 200 || !primary.html) {
     return miss(OUTCOME.PRIMARY_MISSING);
   }
@@ -183,8 +209,9 @@ export default async function compose({
   const key = blockOverrideKey(allElements) || metaKey(head, route.metaKey) || matchKey;
   if (!key) return miss(OUTCOME.NO_KEY);
 
-  const endpoint = route.endpoint.replace('{{key}}', encodeURIComponent(key));
-  const data = await fetchData(endpoint);
+  const endpoint = resolveEndpoint(route, key);
+  const raw = await fetchData(endpoint);
+  const data = unwrapProductJson(raw) || raw;
   if (!data) {
     logger.error(`compose: no data for ${contentPath} from ${endpoint}`);
     return miss(OUTCOME.DATA_UNAVAILABLE);

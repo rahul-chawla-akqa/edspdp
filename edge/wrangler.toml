@@ -1,0 +1,7 @@
+name = "edspdp-pdp-edge"
+main = "worker.js"
+compatibility_date = "2026-01-15"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+EDS_ORIGIN = "https://main--edspdp--rahul-chawla-akqa.aem.live"

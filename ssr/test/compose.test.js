@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import compose, { FEATURES_PATH, OUTCOME, RENDERED_CLASS } from '../src/compose.js';
-import { matchRoute, normalizePath } from '../src/routes.js';
+import { matchRoute, normalizePath, overlayRoutes } from '../src/routes.js';
 import {
   authoredPage, featuresPage, placeholder, product, stubs,
 } from './fixtures.js';
@@ -23,6 +23,7 @@ test('normalizePath strips suffixes, queries and trailing slashes', () => {
   assert.equal(normalizePath('/products/1.plain.html'), '/products/1');
   assert.equal(normalizePath('/products/1/?foo=bar'), '/products/1');
   assert.equal(normalizePath('products/1'), '/products/1');
+  assert.equal(normalizePath('/product-data/1.json'), '/product-data/1');
   assert.equal(normalizePath('/'), '/');
 });
 
@@ -30,6 +31,8 @@ test('matchRoute extracts the key from the path and ignores unrelated paths', ()
   const matched = matchRoute('/products/abc-123');
   assert.equal(matched.route.id, 'product-detail');
   assert.equal(matched.matchKey, 'abc-123');
+  assert.equal(matchRoute('/product-data/1').route.id, 'product-data');
+  assert.equal(matchRoute('/product-detail/1').route.id, 'pdp-edge');
   assert.equal(matchRoute('/about-us'), null);
   assert.equal(matchRoute('/products/1/reviews'), null);
 });
@@ -230,4 +233,45 @@ test('values from the API are escaped into the markup', async () => {
   const { body } = await composePage(authoredPage({ blocks: allBlocks }), { data: hostile });
   assert.ok(!body.includes('<img src=x onerror'), 'injected markup is escaped');
   assert.ok(body.includes('&lt;img src=x onerror=alert(1)&gt;'));
+});
+
+test('product-data paths return sheet JSON and never fetch the primary page', async () => {
+  const stub = stubs();
+  const result = await compose({ path: '/product-data/1', ...stub });
+  assert.equal(result.status, 200);
+  assert.equal(result.outcome, OUTCOME.COMPOSED);
+  assert.match(result.headers['content-type'], /application\/json/);
+  assert.deepEqual(stub.calls.primary, []);
+  assert.deepEqual(stub.calls.data, ['https://dummyjson.com/products/1']);
+  const sheet = JSON.parse(result.body);
+  assert.equal(sheet[':type'], 'sheet');
+  assert.equal(JSON.parse(sheet.data[0].payload).title, product.title);
+});
+
+test('the overlay route table does not compose edge PDP HTML', async () => {
+  const stub = stubs();
+  const result = await compose({
+    path: '/product-detail/1',
+    available: overlayRoutes(),
+    ...stub,
+  });
+  assert.equal(result.status, 404);
+  assert.equal(result.outcome, OUTCOME.NO_ROUTE);
+  assert.deepEqual(stub.calls.primary, []);
+  assert.deepEqual(stub.calls.data, []);
+});
+
+test('edge PDPs fill the shared template from EDS JSON', async () => {
+  const html = authoredPage({ blocks: allBlocks });
+  const stub = stubs({
+    pages: {
+      '/product-detail': { status: 200, html },
+      [FEATURES_PATH]: { status: 200, html: featuresPage('true') },
+    },
+  });
+  const result = await compose({ path: '/product-detail/1', ...stub });
+  assert.equal(result.status, 200);
+  assert.equal(stub.calls.primary[0], '/product-detail');
+  assert.ok(stub.calls.data[0].endsWith('/product-data/1.json'));
+  assert.match(result.body, /class="product-specs api-rendered"/);
 });

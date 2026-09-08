@@ -7,6 +7,8 @@
  * graceful degradation when the overlay fell back to the unmodified AEM page.
  */
 
+import { unwrapProductJson } from './product-json.js';
+
 const API_BASE = 'https://dummyjson.com/products';
 
 const requests = new Map();
@@ -24,16 +26,27 @@ export function resolveProductId(block) {
   const meta = document.head.querySelector('meta[name="product-id"]');
   if (meta && meta.content.trim()) return meta.content.trim();
 
+  const detail = window.location.pathname.match(/^\/product-detail\/([\w-]+)\/?$/);
+  if (detail) return detail[1];
+
   const match = window.location.pathname.match(/^\/products\/([\w-]+)\/?$/);
   return match ? match[1] : null;
+}
+
+function productUrl(id) {
+  if (/^\/product-detail\//.test(window.location.pathname)) {
+    return `/product-data/${encodeURIComponent(id)}.json`;
+  }
+  return `${API_BASE}/${encodeURIComponent(id)}`;
 }
 
 /** Deduplicated per page load so three product blocks cost one request. */
 export async function fetchProduct(id) {
   if (!id) return null;
   if (!requests.has(id)) {
-    const request = fetch(`${API_BASE}/${encodeURIComponent(id)}`)
+    const request = fetch(productUrl(id))
       .then((resp) => (resp.ok ? resp.json() : null))
+      .then((json) => unwrapProductJson(json))
       .catch(() => null);
     requests.set(id, request);
   }

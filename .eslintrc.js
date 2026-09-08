@@ -23,7 +23,7 @@ module.exports = {
   overrides: [
     {
       // Server-side overlay composer and its local dev harness: Node, not the browser.
-      files: ['ssr/**/*.js', 'ssr/**/*.mjs', 'dev/**/*.mjs'],
+      files: ['ssr/**/*.js', 'ssr/**/*.mjs', 'dev/**/*.mjs', 'edge/**/*.js'],
       env: {
         browser: false,
         node: true,

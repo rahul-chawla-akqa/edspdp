@@ -139,3 +139,18 @@ test('a network failure while starting a job is reported, not thrown', async () 
     globalThis.fetch = original;
   }
 });
+
+test('publish: false stops after a successful preview', async () => {
+  const stub = withFetch((url, options) => {
+    if (options.method === 'POST') return queued;
+    return { status: 200, body: { state: 'stopped', progress: { total: 1, failed: 0 } } };
+  });
+  try {
+    const result = await refreshPaths({ ...base, publish: false });
+    assert.equal(result.ok, true);
+    assert.equal(result.live, null);
+    assert.ok(!stub.calls.some((call) => call.url.includes('/live/')));
+  } finally {
+    stub.restore();
+  }
+});

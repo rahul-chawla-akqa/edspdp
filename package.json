@@ -10,6 +10,7 @@
     "test:ssr": "npm --prefix ssr test",
     "ssr:deploy": "npm --prefix ssr run deploy",
     "ssr:wire": "node ssr/scripts/wire-overlay.mjs",
+    "eds:publish-product-json": "node ssr/scripts/publish-product-json.mjs",
     "lint:js": "eslint . --ext .json,.js,.mjs",
     "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
     "lint": "npm run lint:js && npm run lint:css",

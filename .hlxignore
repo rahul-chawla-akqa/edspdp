@@ -12,5 +12,6 @@ _*
 # import those modules in the browser for client-side hydration.
 ssr/*
 dev/*
+edge/*
 drafts/*
 lighthouse-reports/*

@@ -6,6 +6,7 @@
 |----------|-------------|
 | [ssr-overlay-architecture.md](ssr-overlay-architecture.md) | How server-side composition works here, and how to deploy, wire up and operate it |
 | [page-type-playbook.md](page-type-playbook.md) | Applying the pattern to other page types: decision tree, recipes, checklist |
+| [pdp-data-flow.pdf](pdp-data-flow.pdf) / [pdp-data-flow.png](pdp-data-flow.png) | PDP flow diagram: when compose runs, visitor requests, and where data is stored |
 
 Start with the architecture document, then the playbook.
 
@@ -31,4 +32,6 @@ npm run build:json   # regenerate component model aggregates
 npm run ssr:deploy               # deploy the composer to Adobe I/O Runtime
 npm run ssr:wire -- check        # inspect the site config and overlay
 npm run ssr:wire -- preview /products/1
+npm run eds:publish-product-json -- --ids 1 2 3
+npm run eds:publish-product-json -- --catalog --limit 30 --dry-run
 ```

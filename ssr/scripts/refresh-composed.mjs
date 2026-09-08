@@ -53,7 +53,10 @@ async function composedPaths() {
   const index = await resp.json();
   return (index.data || [])
     .map((entry) => normalizePath(entry.path))
-    .filter((path) => matchRoute(path));
+    .filter((path) => {
+      const matched = matchRoute(path);
+      return matched && matched.route.serve !== 'edge' && matched.route.kind !== 'json';
+    });
 }
 
 const paths = await composedPaths();

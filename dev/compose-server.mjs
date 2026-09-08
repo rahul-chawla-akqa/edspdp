@@ -15,8 +15,9 @@ import http from 'node:http';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import compose from '../ssr/src/compose.js';
-import { normalizePath } from '../ssr/src/routes.js';
+import { matchRoute, normalizePath } from '../ssr/src/routes.js';
 import { createDataFetcher, createPrimaryFetcher } from '../ssr/src/http.js';
+import { unwrapProductJson } from '../scripts/product-json.js';
 
 const PORT = Number(process.env.PORT) || 4000;
 const AUTHOR_URL = process.env.PRIMARY_SOURCE_URL
@@ -61,7 +62,20 @@ const fetchRemotePrimary = createPrimaryFetcher({
   timeoutMs: 10000,
   logger,
 });
-const fetchData = createDataFetcher({ timeoutMs: 10000, logger });
+const fetchRemoteData = createDataFetcher({ timeoutMs: 10000, logger });
+
+async function fetchData(endpoint) {
+  const json = await fetchRemoteData(endpoint);
+  const product = unwrapProductJson(json);
+  if (product) return product;
+  const fromEds = /\/product-data\/([\w-]+)(?:\.json)?/i.exec(endpoint);
+  if (fromEds) {
+    return unwrapProductJson(
+      await fetchRemoteData(`https://dummyjson.com/products/${fromEds[1]}`),
+    );
+  }
+  return json;
+}
 
 /*
  * drafts/ stands in for authored content, so composition can be developed before any page
@@ -105,6 +119,11 @@ function repoFile(pathname) {
   if (!resolved.startsWith(REPO_ROOT)) return null;
   if (!existsSync(resolved) || !statSync(resolved).isFile()) return null;
   return resolved;
+}
+
+function isJsonPath(pathname) {
+  const matched = matchRoute(normalizePath(pathname));
+  return Boolean(matched && matched.route.kind === 'json');
 }
 
 /*
@@ -159,7 +178,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (isPagePath(pathname)) {
+  if (isPagePath(pathname) || isJsonPath(pathname)) {
     const result = await compose({
       path: pathname, fetchPrimary, fetchData, logger,
     });

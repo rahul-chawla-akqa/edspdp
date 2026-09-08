@@ -6,6 +6,7 @@
  * possible so the Admin API falls back to the primary AEM content source.
  */
 import compose, { OUTCOME } from '../../src/compose.js';
+import { overlayRoutes } from '../../src/routes.js';
 import { createDataFetcher, createPrimaryFetcher, resolveAuthorization } from '../../src/http.js';
 
 const FALLBACK_HEADERS = { 'content-type': 'text/plain; charset=utf-8' };
@@ -40,6 +41,7 @@ export async function main(params) {
     const result = await compose({
       path,
       logger: log,
+      available: overlayRoutes(),
       fetchPrimary: createPrimaryFetcher({
         baseUrl: params.PRIMARY_SOURCE_URL,
         suffix: params.PRIMARY_SOURCE_SUFFIX || '',
