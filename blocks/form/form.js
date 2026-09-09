@@ -1,21 +1,28 @@
-import { moveInstrumentation } from '../../scripts/scripts.js';
+import {
+  normalizeType,
+  parseIdentityParts,
+  parseOptions,
+  parseRulesParts,
+  slugify,
+  validateField,
+} from './form-utils.js';
 
 const SETTING_KEYS = ['action', 'successMessage', 'errorMessage'];
 const DEFAULT_SUCCESS = 'Thank you. Your form was submitted.';
 const DEFAULT_ERROR = 'Something went wrong. Please try again.';
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const TEL_RE = /^[+]?[\d\s().-]{7,}$/;
-const TYPE_ALIASES = {
-  text: 'text',
-  email: 'email',
-  telephone: 'tel',
-  tel: 'tel',
-  textarea: 'textarea',
-  select: 'select',
-  radio: 'radio',
-  checkbox: 'checkbox',
-  submit: 'submit',
-};
+
+function moveInstrumentation(from, to) {
+  [...from.attributes]
+    .map(({ nodeName }) => nodeName)
+    .filter((attr) => attr.startsWith('data-aue-') || attr.startsWith('data-richtext-'))
+    .forEach((attr) => {
+      const value = from.getAttribute(attr);
+      if (value) {
+        to.setAttribute(attr, value);
+        from.removeAttribute(attr);
+      }
+    });
+}
 
 function cellText(cell) {
   if (!cell) return '';
@@ -30,61 +37,10 @@ function cellParts(cell) {
   if (!cell) return [];
   const children = [...cell.children];
   if (children.length) {
-    return children.map((el) => (el.innerText || el.textContent).trim());
+    return children.map((el) => (el.innerText || el.textContent).trim()).filter(Boolean);
   }
   const text = cellText(cell);
   return text ? [text] : [];
-}
-
-function isTruthy(value) {
-  return ['true', 'yes', '1', 'on', 'required'].includes(value.toLowerCase());
-}
-
-function slugify(value) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function normalizeType(raw) {
-  const key = raw.trim().toLowerCase();
-  return TYPE_ALIASES[key] || key;
-}
-
-function parseOptions(raw) {
-  return raw
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const pipe = line.indexOf('|');
-      if (pipe === -1) {
-        return { value: slugify(line) || line, label: line };
-      }
-      const value = line.slice(0, pipe).trim();
-      const label = line.slice(pipe + 1).trim() || value;
-      return { value, label };
-    })
-    .filter((option) => option.value);
-}
-
-function compilePattern(pattern) {
-  if (!pattern) return null;
-  let source = pattern;
-  let flags = '';
-  if (source.startsWith('/') && source.lastIndexOf('/') > 0) {
-    const last = source.lastIndexOf('/');
-    flags = source.slice(last + 1);
-    source = source.slice(1, last);
-  }
-  try {
-    return new RegExp(source, flags);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Invalid form field pattern', pattern, error);
-    return null;
-  }
 }
 
 function parseBlock(block) {
@@ -122,19 +78,19 @@ function parseField(row, index) {
     };
   }
 
-  const fieldParts = cellParts(cells[1]);
-  const rulesParts = cellParts(cells[2]);
-  const label = fieldParts[0] || '';
-  const name = fieldParts[1] || slugify(label) || `field-${index}`;
+  const identity = parseIdentityParts(cellParts(cells[1]));
+  const rules = parseRulesParts(cellParts(cells[2]));
+  const label = identity.label || '';
+  const name = identity.name || slugify(label) || `field-${index}`;
   return {
     fieldType,
     label,
     name,
-    placeholder: fieldParts[2] || '',
-    helpText: rulesParts[0] || '',
-    required: isTruthy(rulesParts[1] || ''),
-    pattern: rulesParts[2] || '',
-    validationMessage: rulesParts[3] || '',
+    placeholder: identity.placeholder || '',
+    helpText: rules.helpText,
+    required: rules.required,
+    pattern: rules.pattern,
+    validationMessage: rules.validationMessage,
     options: parseOptions(cellText(cells[3]) || ''),
     row,
     index,
@@ -286,35 +242,6 @@ function getFieldValue(config, wrapper) {
   }
   const control = wrapper.querySelector('.form-field-control');
   return control ? control.value.trim() : '';
-}
-
-function isEmptyValue(config, value) {
-  if (Array.isArray(value)) return value.length === 0;
-  return !String(value || '').trim();
-}
-
-function validateField(config, value) {
-  if (isEmptyValue(config, value)) {
-    if (config.required) {
-      return config.validationMessage || `${config.label || 'This field'} is required.`;
-    }
-    return '';
-  }
-
-  const stringValue = Array.isArray(value) ? value.join(',') : String(value);
-
-  if (config.fieldType === 'email' && !EMAIL_RE.test(stringValue)) {
-    return config.validationMessage || 'Please enter a valid email address.';
-  }
-  if (config.fieldType === 'tel' && !TEL_RE.test(stringValue)) {
-    return config.validationMessage || 'Please enter a valid phone number.';
-  }
-
-  const pattern = compilePattern(config.pattern);
-  if (pattern && !pattern.test(stringValue)) {
-    return config.validationMessage || 'Please match the requested format.';
-  }
-  return '';
 }
 
 function focusField(wrapper) {
