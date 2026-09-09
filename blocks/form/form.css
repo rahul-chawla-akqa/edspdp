@@ -1,0 +1,120 @@
+.form {
+  position: relative;
+  max-width: 720px;
+}
+
+.form .form-element {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form .form-field-label,
+.form .form-field-option {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  color: var(--text-color);
+}
+
+.form .form-field-required {
+  color: #b42318;
+}
+
+.form .form-field-control {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--dark-color);
+  border-radius: 4px;
+  padding: 0.65rem 0.75rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.form textarea.form-field-control {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.form .form-field-control:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
+}
+
+.form .form-field-help,
+.form .form-field-error,
+.form .form-status {
+  margin: 0;
+  font-size: var(--body-font-size-xs);
+}
+
+.form .form-field-help {
+  color: var(--dark-color);
+}
+
+.form .form-field-error {
+  color: #b42318;
+}
+
+.form .form-field-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.form .form-field.is-invalid .form-field-control,
+.form .form-field.is-invalid .form-field-options {
+  border-color: #b42318;
+}
+
+.form .form-field-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.form .form-field-option input {
+  margin-block: 0.2rem;
+}
+
+.form .form-honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form .form-status-success {
+  color: #027a48;
+}
+
+.form .form-status-error {
+  color: #b42318;
+}
+
+.form .form-field-submit {
+  margin-top: 0.5rem;
+}
+
+@media (width >= 600px) {
+  .form .form-element {
+    gap: 1.5rem;
+  }
+}
+
+@media (width >= 900px) {
+  .form .form-field-control {
+    padding: 0.75rem 0.9rem;
+  }
+}

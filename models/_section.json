@@ -57,7 +57,8 @@
         "product-reviews",
         "product-gallery",
         "carousel",
-        "feature-flags"
+        "feature-flags",
+        "form"
       ]
     }
   ]

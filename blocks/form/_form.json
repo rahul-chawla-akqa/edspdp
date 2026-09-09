@@ -1,0 +1,343 @@
+{
+  "definitions": [
+    {
+      "title": "Form",
+      "id": "form",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Form",
+              "model": "form",
+              "filter": "form"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Form Text",
+      "id": "form-text",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Form Text",
+              "model": "form-input",
+              "type": "text"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Form Email",
+      "id": "form-email",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Form Email",
+              "model": "form-input",
+              "type": "email"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Form Telephone",
+      "id": "form-tel",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Form Telephone",
+              "model": "form-input",
+              "type": "tel"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Form Textarea",
+      "id": "form-textarea",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Form Textarea",
+              "model": "form-input",
+              "type": "textarea"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Form Select",
+      "id": "form-select",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Form Select",
+              "model": "form-choice",
+              "type": "select"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Form Radio",
+      "id": "form-radio",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Form Radio",
+              "model": "form-choice",
+              "type": "radio"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Form Checkbox",
+      "id": "form-checkbox",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Form Checkbox",
+              "model": "form-choice",
+              "type": "checkbox"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Form Submit",
+      "id": "form-submit",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Form Submit",
+              "model": "form-submit",
+              "type": "submit",
+              "label": "Submit"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "form",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "action",
+          "label": "Endpoint URL",
+          "description": "URL that receives POST application/json after client-side validation. The endpoint must allow CORS from this site."
+        },
+        {
+          "component": "textarea",
+          "valueType": "string",
+          "name": "successMessage",
+          "label": "Success Message",
+          "description": "Shown after a successful 2xx response"
+        },
+        {
+          "component": "textarea",
+          "valueType": "string",
+          "name": "errorMessage",
+          "label": "Error Message",
+          "description": "Shown when the request fails or the endpoint returns a non-2xx status"
+        }
+      ]
+    },
+    {
+      "id": "form-input",
+      "fields": [
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "type",
+          "label": "Field Type",
+          "value": "text",
+          "options": [
+            { "name": "Text", "value": "text" },
+            { "name": "Email", "value": "email" },
+            { "name": "Telephone", "value": "tel" },
+            { "name": "Textarea", "value": "textarea" }
+          ]
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_label",
+          "label": "Label"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_key",
+          "label": "Name",
+          "description": "JSON property name sent to the endpoint"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_placeholder",
+          "label": "Placeholder"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "rules_hint",
+          "label": "Help Text"
+        },
+        {
+          "component": "boolean",
+          "valueType": "boolean",
+          "name": "rules_required",
+          "label": "Required"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "rules_pattern",
+          "label": "Validation Regex",
+          "description": "Optional JavaScript regular expression. Slashes around the pattern are optional."
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "rules_message",
+          "label": "Validation Message",
+          "description": "Shown when this field fails validation"
+        }
+      ]
+    },
+    {
+      "id": "form-choice",
+      "fields": [
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "type",
+          "label": "Field Type",
+          "value": "select",
+          "options": [
+            { "name": "Select", "value": "select" },
+            { "name": "Radio", "value": "radio" },
+            { "name": "Checkbox", "value": "checkbox" }
+          ]
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_label",
+          "label": "Label"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_key",
+          "label": "Name",
+          "description": "JSON property name sent to the endpoint"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_placeholder",
+          "label": "Placeholder",
+          "description": "Used as the empty option label for select fields"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "rules_hint",
+          "label": "Help Text"
+        },
+        {
+          "component": "boolean",
+          "valueType": "boolean",
+          "name": "rules_required",
+          "label": "Required"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "rules_pattern",
+          "label": "Validation Regex",
+          "description": "Optional. Applied to the selected value for select and radio fields."
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "rules_message",
+          "label": "Validation Message"
+        },
+        {
+          "component": "textarea",
+          "valueType": "string",
+          "name": "options",
+          "label": "Options",
+          "description": "One option per line. Use value|Label or Label. Leave empty on a checkbox for a single checkbox."
+        }
+      ]
+    },
+    {
+      "id": "form-submit",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "type",
+          "label": "Field Type",
+          "value": "submit"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "label",
+          "label": "Button Label",
+          "value": "Submit"
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "form",
+      "components": [
+        "form-text",
+        "form-email",
+        "form-tel",
+        "form-textarea",
+        "form-select",
+        "form-radio",
+        "form-checkbox",
+        "form-submit"
+      ]
+    }
+  ]
+}

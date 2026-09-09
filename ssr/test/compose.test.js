@@ -32,7 +32,7 @@ test('matchRoute extracts the key from the path and ignores unrelated paths', ()
   assert.equal(matched.route.id, 'product-detail');
   assert.equal(matched.matchKey, 'abc-123');
   assert.equal(matchRoute('/product-data/1').route.id, 'product-data');
-  assert.equal(matchRoute('/product-detail/1').route.id, 'pdp-edge');
+  assert.equal(matchRoute('/product-detail/1').route.id, 'pdp-from-template');
   assert.equal(matchRoute('/about-us'), null);
   assert.equal(matchRoute('/products/1/reviews'), null);
 });
@@ -248,17 +248,22 @@ test('product-data paths return sheet JSON and never fetch the primary page', as
   assert.equal(JSON.parse(sheet.data[0].payload).title, product.title);
 });
 
-test('the overlay route table does not compose edge PDP HTML', async () => {
-  const stub = stubs();
+test('the overlay composes /product-detail/{id} from the shared template', async () => {
+  const html = authoredPage({ blocks: allBlocks });
+  const stub = stubs({
+    pages: {
+      '/product-detail': { status: 200, html },
+      [FEATURES_PATH]: { status: 200, html: featuresPage('true') },
+    },
+  });
   const result = await compose({
     path: '/product-detail/1',
     available: overlayRoutes(),
     ...stub,
   });
-  assert.equal(result.status, 404);
-  assert.equal(result.outcome, OUTCOME.NO_ROUTE);
-  assert.deepEqual(stub.calls.primary, []);
-  assert.deepEqual(stub.calls.data, []);
+  assert.equal(result.status, 200);
+  assert.equal(stub.calls.primary[0], '/product-detail');
+  assert.match(result.body, /class="product-specs api-rendered"/);
 });
 
 test('edge PDPs fill the shared template from EDS JSON', async () => {

@@ -13,7 +13,8 @@
  *   npm run eds:publish-product-json -- --ids 1,2,3
  *   npm run eds:publish-product-json -- --catalog --limit 30
  *   npm run eds:publish-product-json -- --dry-run --catalog
- *   npm run eds:publish-product-json -- --preview-only --ids 1
+ *   npm run eds:publish-product-json -- --ids 1 --pages
+ *   npm run eds:publish-product-json -- --catalog --limit 30 --pages
  */
 import { readFileSync } from 'node:fs';
 import { refreshPaths } from '../src/admin.js';
@@ -46,6 +47,7 @@ function parseArgs(argv) {
   let catalog = false;
   let dryRun = false;
   let previewOnly = false;
+  let pages = false;
   let limit = DEFAULT_LIMIT;
   let batch = DEFAULT_BATCH;
 
@@ -57,6 +59,8 @@ function parseArgs(argv) {
       dryRun = true;
     } else if (arg === '--preview-only') {
       previewOnly = true;
+    } else if (arg === '--pages') {
+      pages = true;
     } else if (arg === '--limit') {
       i += 1;
       limit = Number(argv[i]) || DEFAULT_LIMIT;
@@ -81,7 +85,7 @@ function parseArgs(argv) {
   }
 
   return {
-    ids, catalog, dryRun, previewOnly, limit, batch,
+    ids, catalog, dryRun, previewOnly, pages, limit, batch,
   };
 }
 
@@ -118,10 +122,37 @@ function dataPaths(ids) {
   return [...new Set(ids)].map((id) => `/product-data/${id}.json`);
 }
 
+function pagePaths(ids) {
+  return [...new Set(ids)].map((id) => `/product-detail/${id}`);
+}
+
 function describe(stage, result) {
   if (!result) return `  ${stage}: skipped`;
   const job = result.job ? `, job ${result.job.state}, ${result.job.failed} failed` : '';
   return `  ${stage}: HTTP ${result.status}${job}`;
+}
+
+async function publishBatches(paths, { label, batch, previewOnly }) {
+  if (!paths.length) return 0;
+  console.log(`${paths.length} ${label}:`);
+  paths.forEach((path) => console.log(`  ${path}`));
+  const batches = chunk(paths, batch);
+  let failures = 0;
+  await batches.reduce((previous, group, index) => previous.then(async () => {
+    console.log(`\n${label} batch ${index + 1}/${batches.length} (${group.length} paths)`);
+    const result = await refreshPaths({
+      org: ORG,
+      site: SITE,
+      branch: BRANCH,
+      token: TOKEN,
+      paths: group,
+      publish: !previewOnly,
+    });
+    console.log(describe('preview', result.preview));
+    console.log(describe('publish', result.live));
+    if (!result.ok) failures += 1;
+  }), Promise.resolve());
+  return failures;
 }
 
 const options = parseArgs(process.argv.slice(2));
@@ -137,14 +168,19 @@ if (options.catalog) {
   ids = ids.concat(await catalogIds(options.limit));
 }
 
-const paths = dataPaths(ids);
-if (!paths.length) {
+const jsonPaths = dataPaths(ids);
+const htmlPaths = options.pages ? pagePaths(ids) : [];
+if (!jsonPaths.length) {
   console.error('no product ids to publish');
   process.exit(1);
 }
 
-console.log(`${paths.length} product JSON path(s):`);
-paths.forEach((path) => console.log(`  ${path}`));
+console.log(`${jsonPaths.length} product JSON path(s):`);
+jsonPaths.forEach((path) => console.log(`  ${path}`));
+if (htmlPaths.length) {
+  console.log(`${htmlPaths.length} PDP HTML path(s):`);
+  htmlPaths.forEach((path) => console.log(`  ${path}`));
+}
 
 if (options.dryRun) {
   console.log('\n--dry-run: stopping before preview/publish');
@@ -157,23 +193,18 @@ if (!TOKEN) {
   process.exit(2);
 }
 
-const batches = chunk(paths, options.batch);
-let failures = 0;
-
-await batches.reduce((previous, batch, index) => previous.then(async () => {
-  console.log(`\nbatch ${index + 1}/${batches.length} (${batch.length} paths)`);
-  const result = await refreshPaths({
-    org: ORG,
-    site: SITE,
-    branch: BRANCH,
-    token: TOKEN,
-    paths: batch,
-    publish: !options.previewOnly,
+let failures = await publishBatches(jsonPaths, {
+  label: 'json',
+  batch: options.batch,
+  previewOnly: options.previewOnly,
+});
+if (!failures && htmlPaths.length) {
+  failures += await publishBatches(htmlPaths, {
+    label: 'html',
+    batch: options.batch,
+    previewOnly: options.previewOnly,
   });
-  console.log(describe('preview', result.preview));
-  console.log(describe('publish', result.live));
-  if (!result.ok) failures += 1;
-}), Promise.resolve());
+}
 
 if (failures) {
   console.error(`\n${failures} batch(es) failed`);

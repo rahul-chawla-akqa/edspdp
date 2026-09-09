@@ -22,7 +22,8 @@
       "product-reviews",
       "product-gallery",
       "carousel",
-      "feature-flags"
+      "feature-flags",
+      "form"
     ]
   },
   {
@@ -56,6 +57,19 @@
       "image",
       "button",
       "title"
+    ]
+  },
+  {
+    "id": "form",
+    "components": [
+      "form-text",
+      "form-email",
+      "form-tel",
+      "form-textarea",
+      "form-select",
+      "form-radio",
+      "form-checkbox",
+      "form-submit"
     ]
   }
 ]
