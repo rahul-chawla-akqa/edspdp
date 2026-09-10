@@ -1,0 +1,8 @@
+kind: "EdgeFunctions"
+version: "1"
+data:
+  functions:
+    - name: posts-composer
+  origins:
+    - name: jsonplaceholder
+      domain: jsonplaceholder.typicode.com

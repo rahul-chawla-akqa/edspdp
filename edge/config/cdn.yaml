@@ -1,0 +1,17 @@
+kind: "CDN"
+version: "1"
+data:
+  originSelectors:
+    rules:
+      - name: route-posts-to-edge-function
+        when:
+          allOf:
+            - { reqProperty: method, in: ["GET", "HEAD"] }
+            - { reqProperty: path, matches: "^/posts(/post-[0-9]+)?(\\.html)?/?$" }
+            - { reqHeader: x-edgefunction-request, exists: false }
+            # Replace www.example.com with the Cloud Manager custom hostname.
+            - { reqProperty: domain, equals: "www.example.com" }
+        action:
+          type: selectAemOrigin
+          originName: edgefunction-posts-composer
+          skipCache: false

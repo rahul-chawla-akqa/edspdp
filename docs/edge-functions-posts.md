@@ -92,10 +92,12 @@ Local Fastly runtime (port 7676), with EDS HTML from live or from `aem up`:
 
 ```bash
 cd edge
+# fastly.toml EDS_ORIGIN should be http://127.0.0.1:3000 while aem up is running
 aio aem edge-functions serve
-# optional: set EDS_ORIGIN in edge/fastly.toml to http://127.0.0.1:3000
 curl -i http://127.0.0.1:7676/posts/post-1
 ```
+
+Restart `aio aem edge-functions serve` after editing `edge/src`; the local wasm is not hot-reloaded.
 
 Without the custom domain, `aem up --html-folder drafts` serves
 `/drafts/posts/post-1` and `/drafts/posts/post-2`. The `post-body` block hydrates in

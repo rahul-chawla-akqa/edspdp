@@ -1,0 +1,27 @@
+authors = []
+description = "Stitch AEM post pages with JSONPlaceholder at Adobe CDN"
+language = "javascript"
+manifest_version = 3
+name = "posts-composer"
+service_id = ""
+
+[scripts]
+  post_init = "npm install"
+
+[local_server]
+  [local_server.backends]
+    [local_server.backends.jsonplaceholder]
+      url = "https://jsonplaceholder.typicode.com"
+      override_host = "jsonplaceholder.typicode.com"
+    [local_server.backends.eds]
+      url = "https://main--edspdp--rahul-chawla-akqa.aem.live"
+      override_host = "main--edspdp--rahul-chawla-akqa.aem.live"
+    [local_server.backends.local_eds]
+      url = "http://127.0.0.1:3000"
+
+  [local_server.config_stores]
+    [local_server.config_stores.config_default]
+      format = "inline-toml"
+      [local_server.config_stores.config_default.contents]
+        LOG_LEVEL = "debug"
+        EDS_ORIGIN = "http://127.0.0.1:3000"

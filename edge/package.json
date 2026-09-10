@@ -1,0 +1,19 @@
+{
+  "name": "edspdp-edge",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Adobe CDN Fastly function: stitch AEM post pages with JSONPlaceholder",
+  "scripts": {
+    "build": "aio aem edge-functions build",
+    "deploy": "aio aem edge-functions deploy posts-composer",
+    "serve": "aio aem edge-functions serve",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "dependencies": {
+    "@fastly/js-compute": "3.42.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
