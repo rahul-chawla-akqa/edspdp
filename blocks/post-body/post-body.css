@@ -1,0 +1,19 @@
+.post-body article {
+  margin: 0;
+}
+
+.post-body h2 {
+  margin: 0 0 0.75em;
+  font-size: var(--heading-font-size-l);
+  line-height: 1.2;
+}
+
+.post-body p {
+  margin: 0 0 0.75em;
+  font-size: var(--body-font-size-m);
+  line-height: 1.5;
+}
+
+.post-body p:last-child {
+  margin-bottom: 0;
+}

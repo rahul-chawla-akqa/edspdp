@@ -3,6 +3,9 @@ coverage/*
 logs/*
 node_modules
 dist
+edge/bin
+edge/pkg
+edge/.aio
 
 # Secrets: AEM admin tokens and App Builder runtime credentials.
 .env
@@ -18,6 +21,9 @@ playwright/.cache/
 .lighthouseci/
 lighthouse-reports/
 drafts/
+!drafts/posts/
+!drafts/posts/**
+
 tests/
 
 # Ensure these files are tracked

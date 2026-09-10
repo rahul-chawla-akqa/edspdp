@@ -28,6 +28,13 @@
           "name": "product-id",
           "label": "Product ID",
           "description": "Key used by the server-side composer to look up external data for this page."
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "post-id",
+          "label": "Post ID",
+          "description": "Numeric JSONPlaceholder id. Used when the URL is not /posts/post-N and the Post Body block has no override."
         }
       ]
     }

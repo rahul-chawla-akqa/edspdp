@@ -1,6 +1,7 @@
 import renderProductSpecs from './product-specs.js';
 import renderProductGallery from './product-gallery.js';
 import renderProductReviews from './product-reviews.js';
+import renderPostBody from './post-body.js';
 import renderProductSeo from './product-seo.js';
 
 /*
@@ -11,6 +12,7 @@ export const blockRenderers = {
   productSpecs: renderProductSpecs,
   productGallery: renderProductGallery,
   productReviews: renderProductReviews,
+  postBody: renderPostBody,
 };
 
 export const seoRenderers = {

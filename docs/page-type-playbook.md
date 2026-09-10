@@ -185,11 +185,15 @@ Build these as a normal client-side block that fetches on decorate. Keep them ou
 element, reserve their space in CSS to avoid layout shift, and render a sensible empty state
 for when the API is down.
 
-### Recipe F — Real-time values that must be in the HTML
+### Recipe F — Values stitched at Adobe CDN (Fastly)
 
-Requires a CDN worker in front of `.aem.live` rewriting the response per request. Real costs:
-latency on every request, a cache strategy to design, no local `aem up` fidelity, and a new
-production dependency. Exhaust Recipes A and E first.
+Use an [AEM Edge Function](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/implementing/developing/edge-functions)
+when the page must stay authored in EDS and the merged HTML must be produced at request
+time (then cached). This is a different pipeline from the BYOM overlay: it needs a custom
+domain, Fastly Compute code, and a two-layer cache purge. Exhaust Recipes A and E first.
+
+The posts proof of concept (`/posts/post-N` + JSONPlaceholder) is documented in
+[edge-functions-posts.md](edge-functions-posts.md). Product pages remain on the overlay.
 
 ---
 

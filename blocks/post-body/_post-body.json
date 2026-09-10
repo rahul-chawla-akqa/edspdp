@@ -1,0 +1,35 @@
+{
+  "definitions": [
+    {
+      "title": "Post Body",
+      "id": "post-body",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Post Body",
+              "model": "post-body"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "post-body",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "postId",
+          "label": "Post ID override",
+          "description": "Leave empty to use the page URL (/posts/post-N) or the Post ID metadata field.",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "filters": []
+}

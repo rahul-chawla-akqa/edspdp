@@ -29,6 +29,9 @@ module.exports = {
         node: true,
         es2022: true,
       },
+      globals: {
+        addEventListener: 'readonly',
+      },
       rules: {
         // The composer deliberately imports the same renderers the blocks use, so one
         // markup implementation serves both the server and the client.

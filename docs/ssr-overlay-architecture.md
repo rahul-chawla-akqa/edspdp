@@ -245,3 +245,4 @@ client-side path does not run.
 - [Configuration Service Setup](https://www.aem.live/docs/config-service-setup)
 - [Admin API](https://www.aem.live/docs/admin.html)
 - [Keeping it 100](https://www.aem.live/developer/keeping-it-100)
+- [Edge-stitched post pages (Fastly)](edge-functions-posts.md) — runtime composition on Adobe CDN, not this overlay

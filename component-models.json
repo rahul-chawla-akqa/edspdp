@@ -27,6 +27,13 @@
         "name": "product-id",
         "label": "Product ID",
         "description": "Key used by the server-side composer to look up external data for this page."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "post-id",
+        "label": "Post ID",
+        "description": "Numeric JSONPlaceholder id. Used when the URL is not /posts/post-N and the Post Body block has no override."
       }
     ]
   },
@@ -526,6 +533,19 @@
         "value": "",
         "label": "Text",
         "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "post-body",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "postId",
+        "label": "Post ID override",
+        "description": "Leave empty to use the page URL (/posts/post-N) or the Post ID metadata field.",
+        "value": ""
       }
     ]
   },
