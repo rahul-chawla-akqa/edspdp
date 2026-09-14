@@ -8,6 +8,7 @@ import {
   parseIdentityParts,
   parseOptions,
   parseRulesParts,
+  parseVisibleWhenParts,
   validateField,
 } from '../../blocks/form/form-utils.js';
 
@@ -125,16 +126,22 @@ test('parseIdentityParts does not treat a human placeholder as the field name', 
     label: 'Email',
     name: 'email',
     placeholder: 'you@example.com',
+    visibleWhenField: '',
+    visibleWhenValue: '',
   });
   assert.deepEqual(parseIdentityParts(['Email Address', 'you@example.com']), {
     label: 'Email Address',
     name: '',
     placeholder: 'you@example.com',
+    visibleWhenField: '',
+    visibleWhenValue: '',
   });
   assert.deepEqual(parseIdentityParts(['Name']), {
     label: 'Name',
     name: '',
     placeholder: '',
+    visibleWhenField: '',
+    visibleWhenValue: '',
   });
 });
 
@@ -386,6 +393,164 @@ test('form without required or regex accepts any filled or empty text when actio
     await submit(env.block, env.window);
     assert.equal(fieldError(env.block, 'notes').error, '');
     assert.match(env.block.querySelector('.form-status').textContent, /Thank you/);
+  } finally {
+    env.restore();
+  }
+});
+
+test('parseVisibleWhenParts maps trigger field and value and ignores empties', () => {
+  assert.deepEqual(parseVisibleWhenParts(['reason', 'other']), {
+    field: 'reason',
+    value: 'other',
+  });
+  assert.deepEqual(parseVisibleWhenParts([]), { field: '', value: '' });
+  assert.deepEqual(parseVisibleWhenParts(['reason']), { field: 'reason', value: '' });
+  assert.deepEqual(
+    parseIdentityParts(['Other reason', 'otherReason', 'reason', 'other']),
+    {
+      label: 'Other reason',
+      name: 'otherReason',
+      placeholder: '',
+      visibleWhenField: 'reason',
+      visibleWhenValue: 'other',
+    },
+  );
+});
+
+const CONDITIONAL_RADIO_FORM = `
+  <div class="form">
+    <div><div>https://example.com/form</div></div>
+    <div><div>Thanks</div></div>
+    <div><div>Nope</div></div>
+    <div>
+      <div>radio</div>
+      <div><p>Reason</p><p>reason</p></div>
+      <div></div>
+      <div>a|Alpha other|Other</div>
+    </div>
+    <div>
+      <div>text</div>
+      <div>
+        <p>Other reason</p>
+        <p>otherReason</p>
+        <p>reason</p>
+        <p>other</p>
+      </div>
+      <div>
+        <p>true</p>
+      </div>
+    </div>
+  </div>
+`;
+
+function otherReasonField(block) {
+  return block.querySelector('[name="otherReason"]').closest('.form-field');
+}
+
+test('radio other reveals a text field; other options keep it hidden', async () => {
+  const env = await decorateForm(CONDITIONAL_RADIO_FORM);
+  try {
+    const wrapper = otherReasonField(env.block);
+    assert.equal(wrapper.classList.contains('is-conditionally-hidden'), true);
+
+    const other = env.block.querySelector('input[name="reason"][value="other"]');
+    other.checked = true;
+    other.dispatchEvent(new env.window.Event('change', { bubbles: true }));
+    assert.equal(wrapper.classList.contains('is-conditionally-hidden'), false);
+
+    env.block.querySelector('[name="otherReason"]').value = 'custom';
+    const alpha = env.block.querySelector('input[name="reason"][value="a"]');
+    alpha.checked = true;
+    alpha.dispatchEvent(new env.window.Event('change', { bubbles: true }));
+    assert.equal(wrapper.classList.contains('is-conditionally-hidden'), true);
+    assert.equal(env.block.querySelector('[name="otherReason"]').value, '');
+  } finally {
+    env.restore();
+  }
+});
+
+test('hidden required field does not fail submit', async () => {
+  const env = await decorateForm(CONDITIONAL_RADIO_FORM, {
+    fetchImpl: async () => ({ ok: true }),
+  });
+  try {
+    await submit(env.block, env.window);
+    assert.equal(fieldError(env.block, 'otherReason').error, '');
+    assert.equal(env.block.querySelector('.form-status').textContent, 'Thanks');
+  } finally {
+    env.restore();
+  }
+});
+
+test('hidden field is absent from JSON fetch body', async () => {
+  let posted;
+  const env = await decorateForm(CONDITIONAL_RADIO_FORM, {
+    fetchImpl: async (url, options) => {
+      posted = JSON.parse(options.body);
+      return { ok: true };
+    },
+  });
+  try {
+    await submit(env.block, env.window);
+    assert.equal(posted.reason, '');
+    assert.equal('otherReason' in posted, false);
+
+    const other = env.block.querySelector('input[name="reason"][value="other"]');
+    other.checked = true;
+    other.dispatchEvent(new env.window.Event('change', { bubbles: true }));
+    env.block.querySelector('[name="otherReason"]').value = 'custom';
+    posted = undefined;
+    await submit(env.block, env.window);
+    assert.equal(posted.reason, 'other');
+    assert.equal(posted.otherReason, 'custom');
+  } finally {
+    env.restore();
+  }
+});
+
+test('select value reveals a second select with options', async () => {
+  const html = `
+    <div class="form">
+      <div><div>https://example.com/form</div></div>
+      <div><div>Thanks</div></div>
+      <div><div>Nope</div></div>
+      <div>
+        <div>select</div>
+        <div><p>Country</p><p>country</p></div>
+        <div></div>
+        <div>in|India us|USA</div>
+      </div>
+      <div>
+        <div>select</div>
+        <div>
+          <p>State</p>
+          <p>state</p>
+          <p>country</p>
+          <p>us</p>
+        </div>
+        <div></div>
+        <div>ny|New York ca|California</div>
+      </div>
+    </div>
+  `;
+  const env = await decorateForm(html);
+  try {
+    const state = env.block.querySelector('[name="state"]');
+    const wrapper = state.closest('.form-field');
+    assert.equal(wrapper.classList.contains('is-conditionally-hidden'), true);
+    assert.deepEqual(
+      [...state.querySelectorAll('option')].map((option) => option.value).filter(Boolean),
+      ['ny', 'ca'],
+    );
+
+    const country = env.block.querySelector('[name="country"]');
+    country.value = 'us';
+    country.dispatchEvent(new env.window.Event('change', { bubbles: true }));
+    assert.equal(wrapper.classList.contains('is-conditionally-hidden'), false);
+
+    country.value = 'in';
+    country.dispatchEvent(new env.window.Event('change', { bubbles: true }));
+    assert.equal(wrapper.classList.contains('is-conditionally-hidden'), true);
   } finally {
     env.restore();
   }

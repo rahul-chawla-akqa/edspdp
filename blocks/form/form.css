@@ -15,6 +15,10 @@
   gap: 0.4rem;
 }
 
+.form .form-field.is-conditionally-hidden {
+  display: none;
+}
+
 .form .form-field-label,
 .form .form-field-option {
   font-family: var(--body-font-family);

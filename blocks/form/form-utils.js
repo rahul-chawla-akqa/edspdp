@@ -70,13 +70,30 @@ export function compilePattern(pattern) {
 }
 
 /**
+ * Reconstructs visible-when rules when AEM omits empty values.
+ * Authored order: trigger field name, option value.
+ */
+export function parseVisibleWhenParts(parts) {
+  const values = (parts || []).map((part) => String(part || '').trim()).filter(Boolean);
+  return {
+    field: values[0] || '',
+    value: values[1] || '',
+  };
+}
+
+/**
  * Reconstructs identity fields when AEM omits empty values (name/placeholder).
- * Authored order: label, name, placeholder.
+ * Authored order: label, name, placeholder, visible-when field, visible-when value.
+ * Visible-when occupies the last two values when more than label/name/placeholder are present.
  */
 export function parseIdentityParts(parts) {
   const values = (parts || []).map((part) => String(part || '').trim()).filter(Boolean);
   const label = values[0] || '';
-  const rest = values.slice(1);
+  let rest = values.slice(1);
+  const visibleWhen = rest.length >= 3
+    ? parseVisibleWhenParts(rest.slice(-2))
+    : { field: '', value: '' };
+  if (rest.length >= 3) rest = rest.slice(0, -2);
   let name = '';
   let placeholder = '';
   if (rest.length >= 2) {
@@ -86,7 +103,13 @@ export function parseIdentityParts(parts) {
     if (looksLikeFieldName(only)) name = only;
     else placeholder = only;
   }
-  return { label, name, placeholder };
+  return {
+    label,
+    name,
+    placeholder,
+    visibleWhenField: visibleWhen.field,
+    visibleWhenValue: visibleWhen.value,
+  };
 }
 
 /**

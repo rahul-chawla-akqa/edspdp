@@ -92,6 +92,8 @@ function parseField(row, index) {
     pattern: rules.pattern,
     validationMessage: rules.validationMessage,
     options: parseOptions(cellText(cells[3]) || ''),
+    visibleWhenField: identity.visibleWhenField,
+    visibleWhenValue: identity.visibleWhenValue,
     row,
     index,
   };
@@ -249,10 +251,73 @@ function focusField(wrapper) {
   if (target && typeof target.focus === 'function') target.focus();
 }
 
+function isFieldHidden(field) {
+  return field.wrapper.classList.contains('is-conditionally-hidden');
+}
+
+function valueMatches(field, expected) {
+  const value = getFieldValue(field.config, field.wrapper);
+  if (Array.isArray(value)) return value.includes(expected);
+  return String(value) === String(expected);
+}
+
+function isConditionallyVisible(field, fieldsByName, visiting = new Set()) {
+  const triggerName = field.config.visibleWhenField;
+  const expected = field.config.visibleWhenValue;
+  if (!triggerName || !expected) return true;
+  if (visiting.has(field)) return false;
+  const trigger = fieldsByName.get(triggerName);
+  if (!trigger) return false;
+  visiting.add(field);
+  if (!isConditionallyVisible(trigger, fieldsByName, visiting)) return false;
+  return valueMatches(trigger, expected);
+}
+
+function clearFieldValue(field) {
+  const { config, wrapper } = field;
+  if (config.fieldType === 'radio' || config.fieldType === 'checkbox') {
+    wrapper.querySelectorAll('input').forEach((input) => {
+      input.checked = false;
+    });
+    return;
+  }
+  const control = wrapper.querySelector('.form-field-control');
+  if (control) control.value = '';
+}
+
+function setConditionalVisibility(field, visible) {
+  const { wrapper, errorEl, control } = field;
+  wrapper.classList.toggle('is-conditionally-hidden', !visible);
+  wrapper.hidden = !visible;
+  wrapper.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  if (!visible) {
+    clearFieldValue(field);
+    if (errorEl) setFieldError(wrapper, errorEl, control, '');
+  }
+}
+
+function syncConditionalFields(fields) {
+  const fieldsByName = new Map();
+  fields.forEach((field) => {
+    if (field.config.fieldType === 'submit') return;
+    fieldsByName.set(field.config.name, field);
+  });
+  const visibility = new Map();
+  fields.forEach((field) => {
+    if (field.config.fieldType === 'submit') return;
+    visibility.set(field, isConditionallyVisible(field, fieldsByName));
+  });
+  fields.forEach((field) => {
+    if (field.config.fieldType === 'submit') return;
+    setConditionalVisibility(field, visibility.get(field));
+  });
+}
+
 function collectPayload(fields) {
   const data = {};
   fields.forEach((field) => {
     if (field.config.fieldType === 'submit') return;
+    if (isFieldHidden(field)) return;
     const value = getFieldValue(field.config, field.wrapper);
     if (field.config.fieldType === 'checkbox' && !field.config.options.length) {
       if (value) data[field.config.name] = value;
@@ -392,6 +457,10 @@ export default function decorate(block) {
   statusEl.hidden = true;
   form.append(statusEl);
 
+  syncConditionalFields(fields);
+  form.addEventListener('change', () => syncConditionalFields(fields));
+  form.addEventListener('input', () => syncConditionalFields(fields));
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     setStatus(statusEl, '', '');
@@ -399,6 +468,10 @@ export default function decorate(block) {
     let firstInvalid;
     const validatable = fields.filter((field) => field.config.fieldType !== 'submit');
     validatable.forEach((field) => {
+      if (isFieldHidden(field)) {
+        setFieldError(field.wrapper, field.errorEl, field.control, '');
+        return;
+      }
       const value = getFieldValue(field.config, field.wrapper);
       const message = validateField(field.config, value);
       setFieldError(field.wrapper, field.errorEl, field.control, message);
@@ -414,6 +487,7 @@ export default function decorate(block) {
     if (honeypot.input.value) {
       setStatus(statusEl, 'success', successMessage);
       form.reset();
+      syncConditionalFields(fields);
       return;
     }
 
@@ -432,6 +506,7 @@ export default function decorate(block) {
       if (!response.ok) throw new Error(`Form submit failed: ${response.status}`);
       setStatus(statusEl, 'success', successMessage);
       form.reset();
+      syncConditionalFields(fields);
       validatable.forEach((field) => setFieldError(field.wrapper, field.errorEl, field.control, ''));
     } catch (error) {
       // eslint-disable-next-line no-console

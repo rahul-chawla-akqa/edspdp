@@ -211,6 +211,20 @@
         {
           "component": "text",
           "valueType": "string",
+          "name": "field_visibleWhenField",
+          "label": "Visible when field name",
+          "description": "Name of a radio, checkbox, or select on this form. Leave empty to always show this field."
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_visibleWhenValue",
+          "label": "Visible when value",
+          "description": "Option value that reveals this field (left side of value|Label, or the slug of a label-only option)."
+        },
+        {
+          "component": "text",
+          "valueType": "string",
           "name": "rules_hint",
           "label": "Help Text"
         },
@@ -270,6 +284,20 @@
           "name": "field_placeholder",
           "label": "Placeholder",
           "description": "Used as the empty option label for select fields"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_visibleWhenField",
+          "label": "Visible when field name",
+          "description": "Name of a radio, checkbox, or select on this form. Leave empty to always show this field."
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "field_visibleWhenValue",
+          "label": "Visible when value",
+          "description": "Option value that reveals this field (left side of value|Label, or the slug of a label-only option)."
         },
         {
           "component": "text",
