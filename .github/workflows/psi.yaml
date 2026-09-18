@@ -1,0 +1,88 @@
+# Lab Lighthouse via PageSpeed Insights on the AEM feature-preview host.
+# Complements (does not replace) Adobe Code Sync's PSI bot.
+name: PageSpeed Insights
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  psi:
+    if: ${{ !contains(join(github.event.pull_request.labels.*.name, ','), 'ignore-psi-check') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Wait for AEM preview
+        env:
+          PREVIEW_URL: https://${{ github.head_ref }}--${{ github.event.repository.name }}--${{ github.repository_owner }}.aem.page
+        run: |
+          for i in $(seq 1 12); do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' "$PREVIEW_URL/products/1" || true)
+            echo "Attempt $i: $PREVIEW_URL/products/1 -> $code"
+            if [ "$code" = "200" ] || [ "$code" = "304" ]; then
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Preview not returning 200 yet; PSI will retry per URL."
+
+      - name: Run PageSpeed Insights
+        id: psi
+        continue-on-error: true
+        env:
+          PSI_API_KEY: ${{ secrets.PSI_API_KEY }}
+          PSI_BASE_URL: https://${{ github.head_ref }}--${{ github.event.repository.name }}--${{ github.repository_owner }}.aem.page
+          PSI_PATHS: /,/products/1
+          PSI_MIN_SCORE: '0.9'
+        run: node scripts/psi-audit.mjs
+
+      - name: Upload PSI reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: psi-reports
+          path: psi-reports
+          if-no-files-found: ignore
+
+      - name: Comment on pull request
+        if: always() && hashFiles('psi-reports/comment.md') != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- psi-audit-comment -->';
+            const body = fs.readFileSync('psi-reports/comment.md', 'utf8');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((comment) => comment.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail if PSI budget missed
+        if: steps.psi.outcome == 'failure'
+        run: exit 1

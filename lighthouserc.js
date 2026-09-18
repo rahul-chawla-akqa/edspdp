@@ -9,6 +9,7 @@
  * local modal drafts are both reachable. If a server is already running:
  *
  *   LIGHTHOUSE_BASE_URL=http://localhost:3001 npm run lighthouse
+ *   LIGHTHOUSE_URLS=/,/products/1 npm run lighthouse
  *
  * Appends ?lighthouse=on (see scripts/aem.js). Reports: lighthouse-reports/
  */
@@ -17,7 +18,7 @@ const startOwnServer = !process.env.LIGHTHOUSE_BASE_URL;
 const isDesktop = process.env.LIGHTHOUSE_PRESET === 'desktop';
 const numberOfRuns = Number(process.env.LIGHTHOUSE_RUNS || 1);
 
-const PAGES = [
+const DEFAULT_PAGES = [
   '/',
   '/drafts/modals/welcome',
   '/drafts/modals/find-dealers',
@@ -28,13 +29,22 @@ const PAGES = [
   '/drafts/modals/help-support',
 ];
 
+const PAGES = process.env.LIGHTHOUSE_URLS
+  ? process.env.LIGHTHOUSE_URLS.split(',').map((entry) => entry.trim()).filter(Boolean)
+  : DEFAULT_PAGES;
+
 /**
  * @param {string} path
  * @returns {string}
  */
-function withLighthouseFlag(path) {
-  const separator = path.includes('?') ? '&' : '?';
-  return `${BASE_URL}${path}${separator}lighthouse=on`;
+function withLighthouseFlag(pathOrUrl) {
+  if (/^https?:\/\//i.test(pathOrUrl)) {
+    const url = new URL(pathOrUrl);
+    url.searchParams.set('lighthouse', 'on');
+    return url.toString();
+  }
+  const separator = pathOrUrl.includes('?') ? '&' : '?';
+  return `${BASE_URL}${pathOrUrl}${separator}lighthouse=on`;
 }
 
 module.exports = {

@@ -20,6 +20,7 @@ playwright-report/
 playwright/.cache/
 .lighthouseci/
 lighthouse-reports/
+psi-reports/
 drafts/
 !drafts/posts/
 !drafts/posts/**

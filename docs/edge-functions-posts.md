@@ -45,6 +45,8 @@ place so only the mapped site domain is stitched; `*.aem.live` stays authored HT
 
 ## Request flow
 
+See [posts-data-flow.pdf](posts-data-flow.pdf) / [posts-data-flow.png](posts-data-flow.png) for the full diagram (same layout as the PDP data-flow doc). Editable source: [posts-data-flow.html](posts-data-flow.html).
+
 ```
 Browser → Adobe CDN cache → Edge Function (cache miss only)
                               ├─ loopback GET /posts/post-N  (sentinel header)

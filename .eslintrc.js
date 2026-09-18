@@ -69,6 +69,17 @@ module.exports = {
       },
     },
     {
+      files: ['scripts/psi-audit.mjs'],
+      env: {
+        browser: false,
+        node: true,
+      },
+      rules: {
+        'no-console': 'off',
+        'no-await-in-loop': 'off',
+      },
+    },
+    {
       files: ['ssr/src/admin.js'],
       rules: {
         // Kept as a named export so more admin operations can be added alongside it.

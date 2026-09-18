@@ -193,7 +193,8 @@ time (then cached). This is a different pipeline from the BYOM overlay: it needs
 domain, Fastly Compute code, and a two-layer cache purge. Exhaust Recipes A and E first.
 
 The posts proof of concept (`/posts/post-N` + JSONPlaceholder) is documented in
-[edge-functions-posts.md](edge-functions-posts.md). Product pages remain on the overlay.
+[edge-functions-posts.md](edge-functions-posts.md), with a flow diagram in
+[posts-data-flow.pdf](posts-data-flow.pdf). Product pages remain on the overlay.
 
 ---
 

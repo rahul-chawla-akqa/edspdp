@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Post data flow</title>
+  <style>
+    :root {
+      --text: #2c2c2c;
+      --muted: #5c5c5c;
+      --line: #d8d8d8;
+      --arrow: #9a9a9a;
+      --orange: #f6ead2;
+      --orange-border: #ead9b0;
+      --white: #ffffff;
+      --white-border: #dcdcdc;
+      --purple: #eadff3;
+      --purple-border: #d3c2e0;
+      --blue: #d7eaf8;
+      --blue-border: #b7d4ea;
+      --green: #d8eedc;
+      --green-border: #b5d8bc;
+      --banner: #e7f4e9;
+      --banner-text: #2d5a34;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 40px 48px 56px;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background: #fff;
+      width: 1440px;
+    }
+
+    h1 {
+      font-size: 34px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .lede {
+      font-size: 15px;
+      color: var(--muted);
+      margin: 0 0 22px;
+      max-width: 1100px;
+      line-height: 1.45;
+    }
+
+    .banner {
+      background: var(--banner);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+    }
+
+    .banner strong {
+      display: block;
+      color: var(--banner-text);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .banner p {
+      margin: 0;
+      font-size: 13.5px;
+      color: var(--banner-text);
+      line-height: 1.45;
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 12px;
+    }
+
+    section { margin-bottom: 28px; }
+
+    .flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 0;
+      border-radius: 10px;
+      padding: 12px 14px 14px;
+      border: 1px solid var(--white-border);
+      background: var(--white);
+    }
+
+    .card.orange { background: var(--orange); border-color: var(--orange-border); }
+    .card.purple { background: var(--purple); border-color: var(--purple-border); }
+    .card.blue { background: var(--blue); border-color: var(--blue-border); }
+    .card.green { background: var(--green); border-color: var(--green-border); }
+
+    .card h3 {
+      font-size: 13.5px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      line-height: 1.3;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .arrow {
+      flex: 0 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--arrow);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .note {
+      margin: 10px 0 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 700;
+      background: #f7f7f7;
+    }
+
+    td:first-child { width: 26%; }
+    td:nth-child(2) { width: 16%; }
+  </style>
+</head>
+<body>
+  <h1>Post data flow</h1>
+  <p class="lede">
+    Post pages merge AEM-authored placeholders with JSONPlaceholder on Adobe CDN.
+    A cache hit never invokes the edge function.
+  </p>
+
+  <div class="banner">
+    <strong>When the API-filled post is generated</strong>
+    <p>
+      The <code>posts-composer</code> edge function runs on a CDN cache miss for
+      <code>GET</code>/<code>HEAD</code> <code>/posts/post-N</code> on the mapped custom domain.
+      It does not run on <code>*.aem.live</code> / <code>*.aem.page</code>, in Universal Editor,
+      or when the stitched document is already in CDN cache.
+    </p>
+  </div>
+
+  <section>
+    <h2>1. Author / publish (placeholders only)</h2>
+    <div class="flow">
+      <div class="card orange">
+        <h3>Author in Universal Editor</h3>
+        <p>Placeholder page and <code>post-body</code> block. Overlay is not registered for <code>/posts/*</code>.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card">
+        <h3>AEM Author HTML</h3>
+        <p>Authored shell plus empty or numeric <code>post-body</code>. Not the API JSON.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card blue">
+        <h3>Content bus</h3>
+        <p>Stores authored HTML only. EDS stores no JSONPlaceholder fields.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card green">
+        <h3>EDS origin</h3>
+        <p><code>.aem.page</code> / <code>.aem.live</code> serve the placeholder page.</p>
+      </div>
+    </div>
+    <p class="note">Preview or publish never calls JSONPlaceholder. A visitor on the custom domain is what triggers stitching.</p>
+  </section>
+
+  <section>
+    <h2>2. Visitor request, cache hit (no stitch, no JSONPlaceholder on the critical path)</h2>
+    <div class="flow">
+      <div class="card orange">
+        <h3>Shopper GET <code>/posts/post-N</code></h3>
+        <p>Browser requests the custom hostname mapped in Cloud Manager.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card green">
+        <h3>Adobe CDN cache</h3>
+        <p><code>skipCache</code> is false. A cached document never invokes Fastly Compute.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card blue">
+        <h3>Stitched HTML</h3>
+        <p>Last miss’s document. <code>post-body</code> already has <code>api-rendered</code>.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card">
+        <h3>Browser</h3>
+        <p>Block JS skips hydrate. No JSONPlaceholder call.</p>
+      </div>
+    </div>
+    <p class="note">Fallback: <code>*.aem.live</code>, Universal Editor, and local drafts never hit this function; <code>post-data.js</code> hydrates in the browser.</p>
+  </section>
+
+  <section>
+    <h2>3. Visitor request, cache miss (HTML stitched on the edge)</h2>
+    <div class="flow">
+      <div class="card orange">
+        <h3>Shopper GET</h3>
+        <p>Custom domain, path matches <code>/posts/post-N</code>, no sentinel header.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card green">
+        <h3>Adobe CDN miss</h3>
+        <p><code>cdn.yaml</code> selects origin <code>edgefunction-posts-composer</code>.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card">
+        <h3>Edge function</h3>
+        <p>Fastly Compute <code>posts-composer</code>. Parses id from the path or authored block text.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card blue">
+        <h3>Loopback EDS HTML</h3>
+        <p>GET same path with <code>x-edgefunction-request: true</code> so the function cannot recurse.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card purple">
+        <h3>JSONPlaceholder</h3>
+        <p><code>GET /posts/{id}</code>. JSON is not stored in AEM; used only to fill the block.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card green">
+        <h3>Stitched HTML cached</h3>
+        <p>Replace <code>.post-body</code>, add <code>api-rendered</code>. Browser TTL 60s; CDN TTL 3600s; keys <code>posts post-N</code>.</p>
+      </div>
+    </div>
+    <p class="note">
+      If EDS is not 200, that status is forwarded. If the API fails or the placeholder is missing, authored HTML is returned so client hydrate can still fill the block. Unexpected exceptions return 502.
+    </p>
+  </section>
+
+  <section>
+    <h2>4. Refresh after HTML or API changes (stitched cache is stale until purge)</h2>
+    <div class="flow">
+      <div class="card orange">
+        <h3>A. Outer CDN purge</h3>
+        <p>AEM CDN Cache Purge API with surrogate keys <code>posts</code> and <code>post-N</code>. Clears the HTML the browser receives.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card">
+        <h3>B. Inner fetch-cache purge</h3>
+        <p><code>aio aem edge-functions purge-cache posts-composer --surrogateKey post-N</code>. Clears EDS HTML and JSONPlaceholder responses tagged by the function.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card blue">
+        <h3>C. Next miss restitches</h3>
+        <p>Purge both layers. Purging only the CDN lets the next miss restitch from a stale fetch cache.</p>
+      </div>
+    </div>
+    <p class="note">Author republish of the placeholder page, or a change in API data, does not rewrite live HTML by itself.</p>
+  </section>
+
+  <section>
+    <h2>5. Where data is stored</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>What</th>
+          <th>Stored?</th>
+          <th>Where</th>
+          <th>When written</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Authored post shell</td>
+          <td>Yes</td>
+          <td>AEM Author</td>
+          <td>Author save</td>
+        </tr>
+        <tr>
+          <td>Merged HTML (<code>post-body</code>, <code>api-rendered</code>)</td>
+          <td>Yes — CDN snapshot</td>
+          <td>Adobe CDN (custom domain)</td>
+          <td>Successful stitch on cache miss; TTL 3600s</td>
+        </tr>
+        <tr>
+          <td>EDS HTML and API JSON in fetch cache</td>
+          <td>Yes — inner TTL 300s</td>
+          <td>Fastly fetch cache</td>
+          <td>Function <code>fetch</code> with <code>CacheOverride</code></td>
+        </tr>
+        <tr>
+          <td>Post JSON from JSONPlaceholder</td>
+          <td>No durable store in AEM</td>
+          <td>Function memory, fetch cache, or a browser Map on hydrate</td>
+          <td>Cache miss stitch, or client hydrate if the function did not fill the block</td>
+        </tr>
+        <tr>
+          <td>Price-style live fields</td>
+          <td>Not in this PoC</td>
+          <td>—</td>
+          <td>JSONPlaceholder posts are treated as stitchable snapshot data</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>
