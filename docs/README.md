@@ -22,9 +22,31 @@ Each carries a scope note explaining what still applies.
 | [JSON2HTML-SETUP.md](JSON2HTML-SETUP.md) | Accurate for the whole-page pattern (playbook Recipe D); not how this site's PDPs work |
 | [AEM_EDS_BYOM_Overlay_Blueprint.md](AEM_EDS_BYOM_Overlay_Blueprint.md) | Superseded, and contains two corrected errors about `fstab.yaml` and per-request invocation |
 
+## Storybook (block review)
+
+Isolated EDS blocks for local review and QA. Stories wrap authored markup, run `decorate()`, and do not call live CMS or product APIs.
+
+```bash
+npm run storybook            # http://localhost:6006
+npm run build-storybook      # static build in storybook-static/
+npm run storybook:preview    # serve the static build on :6007 (keeps .html deep links)
+```
+
+Toolbar:
+
+- **Theme:** `default`, `corporate`, `retail` (adds the same class on `document.body` as EDS theme metadata)
+- **Viewport:** Mobile (390px, ≤600px) or Desktop (1280px, >600px). Each block also has Mobile and Desktop stories for deep links.
+
+When you add a block, add `storybook/stories/{name}.stories.js` that supplies pre-decoration row markup and calls the block `decorate()` function. Put fixtures in `storybook/fixtures/`. Keep stories out of `blocks/` so AEM Code Sync does not serve them.
+
+CI uploads `storybook-static` as the `storybook-qa` artifact on every push.
+
 ## Quick reference
 
 ```bash
+npm run storybook            # block Storybook on :6006
+npm run build-storybook      # static QA build
+npm run storybook:preview    # serve storybook-static on :6007
 npm run dev          # compose proxy on :4000 plus aem up on :3000
 npm run test:ssr     # composition, block decoration and admin job tests
 npm run lint

@@ -1,0 +1,9 @@
+body.corporate {
+  --background-color: #f4f1ea;
+  --light-color: #ebe6db;
+  --dark-color: #2c3a42;
+  --text-color: #1a1a1a;
+  --link-color: #1f4e5f;
+  --link-hover-color: #163845;
+  --heading-font-family: georgia, 'times new roman', serif;
+}

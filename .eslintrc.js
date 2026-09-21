@@ -58,6 +58,30 @@ module.exports = {
       },
     },
     {
+      files: ['.storybook/**/*.js', 'storybook/**/*.js'],
+      env: {
+        browser: true,
+        node: true,
+      },
+      rules: {
+        'import/extensions': 'off',
+        'import/no-extraneous-dependencies': 'off',
+        'import/no-unresolved': 'off',
+        'import/prefer-default-export': 'off',
+        'no-underscore-dangle': 'off',
+      },
+    },
+    {
+      files: ['.storybook/main.js'],
+      env: {
+        browser: false,
+        node: true,
+      },
+      parserOptions: {
+        sourceType: 'script',
+      },
+    },
+    {
       files: ['tests/**/*.js', 'playwright.config.js', 'lighthouserc.js'],
       env: {
         browser: false,

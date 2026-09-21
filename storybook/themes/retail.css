@@ -1,0 +1,10 @@
+body.retail {
+  --background-color: #fff8f5;
+  --light-color: #ffe8dc;
+  --dark-color: #7a2e0e;
+  --text-color: #1b1b1b;
+  --link-color: #e85d04;
+  --link-hover-color: #c44902;
+  --body-font-family: 'trebuchet ms', 'segoe ui', sans-serif;
+  --heading-font-family: 'trebuchet ms', 'segoe ui', sans-serif;
+}

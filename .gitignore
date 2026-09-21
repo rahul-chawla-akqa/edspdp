@@ -26,6 +26,7 @@ drafts/
 !drafts/posts/**
 
 tests/
+storybook-static/
 
 # Ensure these files are tracked
 !CLAUDE.md

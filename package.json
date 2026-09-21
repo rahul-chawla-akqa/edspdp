@@ -26,6 +26,9 @@
     "lighthouse": "lhci autorun --config=lighthouserc.js",
     "lighthouse:desktop": "LIGHTHOUSE_PRESET=desktop lhci autorun --config=lighthouserc.js",
     "psi": "node scripts/psi-audit.mjs",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o storybook-static && cp storybook/serve.json storybook-static/serve.json",
+    "storybook:preview": "npx --yes serve storybook-static -p 6007",
     "build:json": "npm-run-all -p build:json:models build:json:definitions build:json:filters",
     "build:json:models": "merge-json-cli -i \"models/_component-models.json\" -o \"component-models.json\"",
     "build:json:definitions": "merge-json-cli -i \"models/_component-definition.json\" -o \"component-definition.json\"",
@@ -46,6 +49,11 @@
     "@babel/eslint-parser": "7.28.6",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.62.1",
+    "@storybook/addon-a11y": "^8.6.18",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/html-vite": "^8.6.14",
+    "@storybook/test": "^8.6.15",
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.32.0",
@@ -54,7 +62,9 @@
     "husky": "9.1.1",
     "merge-json-cli": "1.0.4",
     "npm-run-all": "4.1.5",
+    "storybook": "^8.6.14",
     "stylelint": "17.12.0",
-    "stylelint-config-standard": "40.0.0"
+    "stylelint-config-standard": "40.0.0",
+    "vite": "^5.4.21"
   }
 }

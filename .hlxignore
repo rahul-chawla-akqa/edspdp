@@ -14,4 +14,7 @@ ssr/*
 dev/*
 edge/*
 drafts/*
-lighthouse-reports/*
+lighthouse-reports/
+.storybook/*
+storybook/*
+storybook-static/**

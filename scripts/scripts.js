@@ -202,4 +202,5 @@ async function loadPage() {
   loadDelayed();
 }
 
-loadPage();
+// Storybook sets window.IS_STORYBOOK so isolated block stories do not boot the full page.
+if (!window.IS_STORYBOOK) loadPage();
