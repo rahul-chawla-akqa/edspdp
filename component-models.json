@@ -156,6 +156,152 @@
     ]
   },
   {
+    "id": "bento-grid",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "Small label above the heading, for example \"Latest News\""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "headingType",
+        "label": "Heading Level",
+        "value": "h2",
+        "options": [
+          {
+            "name": "H2",
+            "value": "h2"
+          },
+          {
+            "name": "H3",
+            "value": "h3"
+          },
+          {
+            "name": "H4",
+            "value": "h4"
+          }
+        ]
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Header Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkText",
+        "label": "Header Link Text",
+        "value": "Discover All"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "classes",
+        "label": "Layout",
+        "value": "layout-equal-4",
+        "description": "Card count each layout is designed for: Equal 4-up = 4, Equal 3-up = 3, News 5-up = 5, Featured 6-up = 6. Extra cards wrap onto new rows.",
+        "options": [
+          {
+            "name": "Equal 4-up (portrait)",
+            "value": "layout-equal-4"
+          },
+          {
+            "name": "Equal 3-up (landscape)",
+            "value": "layout-equal-3"
+          },
+          {
+            "name": "News 5-up (tall centre)",
+            "value": "layout-news-5"
+          },
+          {
+            "name": "Featured 6-up (large first)",
+            "value": "layout-featured-6"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bento-grid-item",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Alt Text",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cardText_chip",
+        "label": "Category Chip",
+        "description": "Optional pill shown in the top left of the card"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cardText_title",
+        "label": "Title"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "cardText_titleType",
+        "label": "Title Level",
+        "value": "h3",
+        "options": [
+          {
+            "name": "H3",
+            "value": "h3"
+          },
+          {
+            "name": "H4",
+            "value": "h4"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cardText_date",
+        "label": "Date",
+        "description": "Optional. A parsable date such as 17 July 2026 renders as a calendar badge in the Equal 3-up layout, otherwise it is shown as text."
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkText",
+        "label": "Link Text"
+      }
+    ]
+  },
+  {
     "id": "card-gallery-item",
     "fields": [
       {

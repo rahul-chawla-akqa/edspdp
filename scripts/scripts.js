@@ -9,8 +9,12 @@ import {
   loadSection,
   loadSections,
   loadCSS,
+  getMetadata,
 } from './aem.js';
 import { bindOpenModalOnClick } from './open-modal.js';
+
+// brand applied when a page carries no `theme` metadata, see styles/styles.css
+const DEFAULT_THEME = 'apollo';
 
 /**
  * Moves all the attributes from a given elmenet to another given element.
@@ -132,6 +136,7 @@ export function decorateMain(main) {
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
+  if (!getMetadata('theme')) document.body.classList.add(DEFAULT_THEME);
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
@@ -202,5 +207,4 @@ async function loadPage() {
   loadDelayed();
 }
 
-// Storybook sets window.IS_STORYBOOK so isolated block stories do not boot the full page.
-if (!window.IS_STORYBOOK) loadPage();
+loadPage();
