@@ -1,8 +1,5 @@
 import { getMetadata, loadScript } from './aem.js';
 
-/** Public Google reCAPTCHA v3 site key for the website. Override per page with metadata. */
-export const RECAPTCHA_SITE_KEY = '6Lc4ecotAAAAAIb_-T40wb_sFFqD-1ZjSLfyQSZK';
-
 const RECAPTCHA_ACTION = 'form_submit';
 const RECAPTCHA_READY_TIMEOUT_MS = 10000;
 
@@ -38,17 +35,16 @@ function whenRecaptchaReady() {
 }
 
 /**
- * Resolves the public site key: page metadata first, then the site constant.
+ * Resolves the public site key from page metadata `recaptcha-site-key`.
  * @returns {string}
  */
 export function getRecaptchaSiteKey() {
-  const pageKey = getMetadata('recaptcha-site-key').trim();
-  return pageKey || String(RECAPTCHA_SITE_KEY || '').trim();
+  return getMetadata('recaptcha-site-key').trim();
 }
 
 /**
  * True when this form should protect submit with reCAPTCHA.
- * A page metadata key or the site key is enough.
+ * Both are required: the authored recaptcha flag, and a page metadata site key.
  * @param {Element} block the form block
  * @returns {boolean}
  */

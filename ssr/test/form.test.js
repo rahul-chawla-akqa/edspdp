@@ -585,7 +585,7 @@ const SIMPLE_FORM = `
 
 const RECAPTCHA_FORM = SIMPLE_FORM.replace('class="form"', 'class="form recaptcha"');
 
-test('form with a site key loads reCAPTCHA even without the authored class', async () => {
+test('page site key does not enable reCAPTCHA without the form flag', async () => {
   const calls = [];
   let posted;
   const env = await decorateForm(SIMPLE_FORM, {
@@ -603,13 +603,12 @@ test('form with a site key loads reCAPTCHA even without the authored class', asy
     },
   });
   try {
-    assert.equal(env.block.classList.contains('recaptcha'), true);
-    assert.match(env.block.querySelector('.form-recaptcha-disclosure').textContent, /reCAPTCHA/);
+    assert.equal(env.block.classList.contains('recaptcha'), false);
+    assert.equal(env.block.querySelector('.form-recaptcha-disclosure'), null);
     env.block.querySelector('[name="notes"]').value = 'hello';
     await submit(env.block, env.window);
-    assert.equal(calls.length, 1);
-    assert.equal(calls[0].key, 'page-key');
-    assert.equal(posted['g-recaptcha-response'], 'token-site');
+    assert.equal(calls.length, 0);
+    assert.equal(posted['g-recaptcha-response'], undefined);
     assert.equal(posted.notes, 'hello');
   } finally {
     env.restore();
@@ -647,8 +646,7 @@ test('recaptcha form uses the page site key and posts g-recaptcha-response', asy
   }
 });
 
-test('recaptcha form without page metadata uses the site key', async () => {
-  const { RECAPTCHA_SITE_KEY } = await import('../../scripts/recaptcha.js');
+test('recaptcha form without page metadata does not run reCAPTCHA', async () => {
   const calls = [];
   let posted;
   const env = await decorateForm(RECAPTCHA_FORM, {
@@ -665,11 +663,12 @@ test('recaptcha form without page metadata uses the site key', async () => {
     },
   });
   try {
-    assert.ok(RECAPTCHA_SITE_KEY);
+    assert.equal(env.block.querySelector('.form-recaptcha-disclosure'), null);
     env.block.querySelector('[name="notes"]').value = 'hello';
     await submit(env.block, env.window);
-    assert.equal(calls[0].key, RECAPTCHA_SITE_KEY);
-    assert.equal(posted['g-recaptcha-response'], 'token-constant');
+    assert.equal(calls.length, 0);
+    assert.equal(posted['g-recaptcha-response'], undefined);
+    assert.equal(posted.notes, 'hello');
   } finally {
     env.restore();
   }
@@ -704,6 +703,10 @@ test('recaptcha execute failure shows the error and does not fetch', async () =>
 
 test('loadRecaptcha waits until grecaptcha.ready provides execute', async () => {
   const env = installDom('<main></main>');
+  const meta = env.document.createElement('meta');
+  meta.setAttribute('name', 'recaptcha-site-key');
+  meta.content = 'ready-key';
+  env.document.head.append(meta);
   const originalAppend = env.document.head.append.bind(env.document.head);
   env.document.head.append = (node) => {
     if (String(node?.src || '').includes('google.com/recaptcha/api.js')) {
@@ -721,7 +724,7 @@ test('loadRecaptcha waits until grecaptcha.ready provides execute', async () => 
   try {
     const { loadRecaptcha, executeRecaptcha } = await import(`../../scripts/recaptcha.js?ready=${Date.now()}`);
     const key = await loadRecaptcha();
-    assert.equal(key.length > 0, true);
+    assert.equal(key, 'ready-key');
     assert.equal(await executeRecaptcha(), 'token-ready');
   } finally {
     env.restore();

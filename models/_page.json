@@ -41,7 +41,7 @@
           "valueType": "string",
           "name": "recaptcha-site-key",
           "label": "reCAPTCHA v3 site key",
-          "description": "Optional. Overrides the website site key on this page only. Leave empty to use the site default."
+          "description": "Google reCAPTCHA v3 site key for this page. Required when a form on the page uses the recaptcha variant."
         }
       ]
     }
