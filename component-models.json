@@ -34,6 +34,13 @@
         "name": "post-id",
         "label": "Post ID",
         "description": "Numeric JSONPlaceholder id. Used when the URL is not /posts/post-N and the Post Body block has no override."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "recaptcha-site-key",
+        "label": "reCAPTCHA v3 site key",
+        "description": "Optional. Overrides the website site key on this page only. Leave empty to use the site default."
       }
     ]
   },
@@ -325,6 +332,13 @@
         "name": "errorMessage",
         "label": "Error Message",
         "description": "Shown when the request fails or the endpoint returns a non-2xx status"
+      },
+      {
+        "component": "boolean",
+        "name": "classes_recaptcha",
+        "label": "Enable reCAPTCHA v3",
+        "description": "Uses the page or site reCAPTCHA key. Sends g-recaptcha-response with the JSON payload.",
+        "valueType": "boolean"
       }
     ]
   },

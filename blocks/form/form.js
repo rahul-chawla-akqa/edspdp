@@ -1,4 +1,9 @@
 import {
+  executeRecaptcha,
+  isFormRecaptchaEnabled,
+  loadRecaptcha,
+} from '../../scripts/recaptcha.js';
+import {
   normalizeType,
   parseIdentityParts,
   parseOptions,
@@ -412,11 +417,37 @@ function setStatus(statusEl, type, message) {
   statusEl.className = `form-status${type ? ` form-status-${type}` : ''}`;
 }
 
+function appendRecaptchaDisclosure(form) {
+  const disclosure = document.createElement('p');
+  disclosure.className = 'form-recaptcha-disclosure';
+
+  const privacy = document.createElement('a');
+  privacy.href = 'https://policies.google.com/privacy';
+  privacy.target = '_blank';
+  privacy.rel = 'noopener noreferrer';
+  privacy.textContent = 'Privacy Policy';
+
+  const terms = document.createElement('a');
+  terms.href = 'https://policies.google.com/terms';
+  terms.target = '_blank';
+  terms.rel = 'noopener noreferrer';
+  terms.textContent = 'Terms of Service';
+
+  disclosure.append(
+    'This site is protected by reCAPTCHA and the Google ',
+    privacy,
+    ' and ',
+    terms,
+    ' apply.',
+  );
+  form.append(disclosure);
+}
+
 /**
  * Decorates the form block into a native HTML form with validation and JSON submit.
  * @param {Element} block the form block
  */
-export default function decorate(block) {
+export default async function decorate(block) {
   const { settings, fieldRows } = parseBlock(block);
   const form = document.createElement('form');
   form.className = 'form-element';
@@ -456,6 +487,16 @@ export default function decorate(block) {
   statusEl.setAttribute('aria-live', 'polite');
   statusEl.hidden = true;
   form.append(statusEl);
+
+  const recaptchaRequested = isFormRecaptchaEnabled(block);
+  if (recaptchaRequested) {
+    block.classList.add('recaptcha');
+    appendRecaptchaDisclosure(form);
+    loadRecaptcha().catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    });
+  }
 
   syncConditionalFields(fields);
   form.addEventListener('change', () => syncConditionalFields(fields));
@@ -498,10 +539,14 @@ export default function decorate(block) {
 
     submitButton.disabled = true;
     try {
+      const payload = collectPayload(fields);
+      if (recaptchaRequested) {
+        payload['g-recaptcha-response'] = await executeRecaptcha();
+      }
       const response = await fetch(settings.action, {
         method: 'POST',
         headers: { 'content-type': 'application/json', accept: 'application/json' },
-        body: JSON.stringify(collectPayload(fields)),
+        body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error(`Form submit failed: ${response.status}`);
       setStatus(statusEl, 'success', successMessage);

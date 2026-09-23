@@ -37,11 +37,21 @@ function installDom(html, { fetchImpl } = {}) {
   };
 }
 
-async function decorateForm(html, options) {
+async function decorateForm(html, options = {}) {
   const env = installDom(`<main>${html}</main>`, options);
+  if (options.pageSiteKey) {
+    const meta = env.document.createElement('meta');
+    meta.setAttribute('name', 'recaptcha-site-key');
+    meta.content = options.pageSiteKey;
+    env.document.head.append(meta);
+  }
+  env.window.grecaptcha = options.grecaptcha || {
+    ready: (cb) => cb(),
+    execute: async () => 'token-test',
+  };
   const { default: decorate } = await import(`../../blocks/form/form.js?t=${Date.now()}-${Math.random()}`);
   const block = env.document.querySelector('.form');
-  decorate(block);
+  await decorate(block);
   return { ...env, block };
 }
 
@@ -551,6 +561,164 @@ test('select value reveals a second select with options', async () => {
     country.value = 'in';
     country.dispatchEvent(new env.window.Event('change', { bubbles: true }));
     assert.equal(wrapper.classList.contains('is-conditionally-hidden'), true);
+  } finally {
+    env.restore();
+  }
+});
+
+const SIMPLE_FORM = `
+  <div class="form">
+    <div><div>https://example.com/form</div></div>
+    <div><div>Thanks</div></div>
+    <div><div>Nope</div></div>
+    <div>
+      <div>text</div>
+      <div><p>Notes</p><p>notes</p></div>
+      <div></div>
+    </div>
+  </div>
+`;
+
+const RECAPTCHA_FORM = SIMPLE_FORM.replace('class="form"', 'class="form recaptcha"');
+
+test('form with a site key loads reCAPTCHA even without the authored class', async () => {
+  const calls = [];
+  let posted;
+  const env = await decorateForm(SIMPLE_FORM, {
+    pageSiteKey: 'page-key',
+    grecaptcha: {
+      ready: (cb) => cb(),
+      execute: async (key, options) => {
+        calls.push({ key, options });
+        return 'token-site';
+      },
+    },
+    fetchImpl: async (url, options) => {
+      posted = JSON.parse(options.body);
+      return { ok: true };
+    },
+  });
+  try {
+    assert.equal(env.block.classList.contains('recaptcha'), true);
+    assert.match(env.block.querySelector('.form-recaptcha-disclosure').textContent, /reCAPTCHA/);
+    env.block.querySelector('[name="notes"]').value = 'hello';
+    await submit(env.block, env.window);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].key, 'page-key');
+    assert.equal(posted['g-recaptcha-response'], 'token-site');
+    assert.equal(posted.notes, 'hello');
+  } finally {
+    env.restore();
+  }
+});
+
+test('recaptcha form uses the page site key and posts g-recaptcha-response', async () => {
+  const calls = [];
+  let posted;
+  const env = await decorateForm(RECAPTCHA_FORM, {
+    pageSiteKey: 'page-key',
+    grecaptcha: {
+      ready: (cb) => cb(),
+      execute: async (key, options) => {
+        calls.push({ key, options });
+        return 'token-page';
+      },
+    },
+    fetchImpl: async (url, options) => {
+      posted = JSON.parse(options.body);
+      return { ok: true };
+    },
+  });
+  try {
+    assert.match(env.block.querySelector('.form-recaptcha-disclosure').textContent, /reCAPTCHA/);
+    env.block.querySelector('[name="notes"]').value = 'hello';
+    await submit(env.block, env.window);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].key, 'page-key');
+    assert.equal(calls[0].options.action, 'form_submit');
+    assert.equal(posted['g-recaptcha-response'], 'token-page');
+    assert.equal(posted.notes, 'hello');
+  } finally {
+    env.restore();
+  }
+});
+
+test('recaptcha form without page metadata uses the site key', async () => {
+  const { RECAPTCHA_SITE_KEY } = await import('../../scripts/recaptcha.js');
+  const calls = [];
+  let posted;
+  const env = await decorateForm(RECAPTCHA_FORM, {
+    grecaptcha: {
+      ready: (cb) => cb(),
+      execute: async (key, options) => {
+        calls.push({ key, options });
+        return 'token-constant';
+      },
+    },
+    fetchImpl: async (url, options) => {
+      posted = JSON.parse(options.body);
+      return { ok: true };
+    },
+  });
+  try {
+    assert.ok(RECAPTCHA_SITE_KEY);
+    env.block.querySelector('[name="notes"]').value = 'hello';
+    await submit(env.block, env.window);
+    assert.equal(calls[0].key, RECAPTCHA_SITE_KEY);
+    assert.equal(posted['g-recaptcha-response'], 'token-constant');
+  } finally {
+    env.restore();
+  }
+});
+
+test('recaptcha execute failure shows the error and does not fetch', async () => {
+  let fetched = false;
+  const originalError = console.error;
+  console.error = () => {};
+  const env = await decorateForm(RECAPTCHA_FORM, {
+    pageSiteKey: 'page-key',
+    grecaptcha: {
+      ready: (cb) => cb(),
+      execute: async () => {
+        throw new Error('blocked');
+      },
+    },
+    fetchImpl: async () => {
+      fetched = true;
+      return { ok: true };
+    },
+  });
+  try {
+    await submit(env.block, env.window);
+    assert.equal(fetched, false);
+    assert.equal(env.block.querySelector('.form-status').textContent, 'Nope');
+  } finally {
+    console.error = originalError;
+    env.restore();
+  }
+});
+
+test('loadRecaptcha waits until grecaptcha.ready provides execute', async () => {
+  const env = installDom('<main></main>');
+  const originalAppend = env.document.head.append.bind(env.document.head);
+  env.document.head.append = (node) => {
+    if (String(node?.src || '').includes('google.com/recaptcha/api.js')) {
+      env.window.grecaptcha = {
+        ready(cb) {
+          env.window.grecaptcha.execute = async () => 'token-ready';
+          cb();
+        },
+      };
+      node.onload();
+      return;
+    }
+    originalAppend(node);
+  };
+  try {
+    const { loadRecaptcha, executeRecaptcha } = await import(`../../scripts/recaptcha.js?ready=${Date.now()}`);
+    const key = await loadRecaptcha();
+    assert.equal(key.length > 0, true);
+    assert.equal(await executeRecaptcha(), 'token-ready');
   } finally {
     env.restore();
   }
