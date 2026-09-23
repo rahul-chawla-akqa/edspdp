@@ -11,6 +11,7 @@ import {
   loadCSS,
 } from './aem.js';
 import { bindOpenModalOnClick } from './open-modal.js';
+import { fetchPlaceholders } from './placeholders.js';
 
 /**
  * Moves all the attributes from a given elmenet to another given element.
@@ -131,6 +132,7 @@ export function decorateMain(main) {
  */
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
+  window.hlx.placeholdersReady = fetchPlaceholders();
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {

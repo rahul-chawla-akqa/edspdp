@@ -22,7 +22,11 @@ function installDom(html, { fetchImpl } = {}) {
     HTMLElement: dom.window.HTMLElement,
     Node: dom.window.Node,
     DocumentFragment: dom.window.DocumentFragment,
-    fetch: fetchImpl || (async () => ({ ok: true })),
+    fetch: async (url, options) => {
+      if (String(url).includes('/placeholders.json')) return { ok: false };
+      const impl = fetchImpl || (async () => ({ ok: true }));
+      return impl(url, options);
+    },
   };
   Object.entries(globals).forEach(([key, value]) => {
     previous[key] = globalThis[key];

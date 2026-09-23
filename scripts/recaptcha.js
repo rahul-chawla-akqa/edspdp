@@ -1,7 +1,7 @@
 import { getMetadata, loadScript } from './aem.js';
 
 /** Public Google reCAPTCHA v3 site key for the website. Override per page with metadata. */
-export const RECAPTCHA_SITE_KEY = '6LdBTaApAAAAANMc8IgR1ZNJGi7Wni3Gdz60ipxg';
+export const RECAPTCHA_SITE_KEY = '6Lc4ecotAAAAAIb_-T40wb_sFFqD-1ZjSLfyQSZK';
 
 const RECAPTCHA_ACTION = 'form_submit';
 const RECAPTCHA_READY_TIMEOUT_MS = 10000;

@@ -1,3 +1,4 @@
+import { fetchPlaceholders } from '../../scripts/placeholders.js';
 import {
   executeRecaptcha,
   isFormRecaptchaEnabled,
@@ -343,7 +344,12 @@ function buildField(config) {
     const button = document.createElement('button');
     button.type = 'submit';
     button.className = 'button primary';
-    button.textContent = config.label;
+    button.textContent = 'Submit';
+    const applyLabel = (placeholders) => {
+      if (placeholders.formButton) button.textContent = placeholders.formButton;
+    };
+    if (window.placeholders?.resolved) applyLabel(window.placeholders.resolved);
+    else fetchPlaceholders().then(applyLabel).catch(() => {});
     wrapper.append(button);
     return { wrapper, config, button };
   }
