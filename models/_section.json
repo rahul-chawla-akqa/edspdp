@@ -8,7 +8,8 @@
           "page": {
             "resourceType": "core/franklin/components/section/v1/section",
             "template": {
-              "model": "section"
+              "model": "section",
+              "filter": "section"
             }
           }
         }
@@ -64,7 +65,8 @@
         "post-body",
         "carousel",
         "feature-flags",
-        "form"
+        "form",
+        "footer"
       ]
     }
   ]

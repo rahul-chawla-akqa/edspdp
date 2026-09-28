@@ -2,7 +2,8 @@
   {
     "id": "main",
     "components": [
-      "section"
+      "section",
+      "footer-section"
     ]
   },
   {
@@ -25,7 +26,8 @@
       "post-body",
       "carousel",
       "feature-flags",
-      "form"
+      "form",
+      "footer"
     ]
   },
   {
