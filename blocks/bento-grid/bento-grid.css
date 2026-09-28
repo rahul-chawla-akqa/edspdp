@@ -1,5 +1,9 @@
 /* header */
 
+main .bento-grid {
+ padding-block: 56px;
+}
+
 main .bento-grid .bento-grid-header {
   display: flex;
   flex-direction: column;
@@ -29,25 +33,10 @@ main .bento-grid .bento-grid-heading {
   font-weight: 400;
 }
 
+/* appearance comes from the global secondary button, only placement is local */
 main .bento-grid a.bento-grid-cta {
   align-self: flex-start;
   flex: none;
-  border: 1px solid var(--color-border-primary, var(--text-color));
-  border-radius: var(--radius-pill);
-  padding: var(--space-2) var(--space-5);
-  color: var(--color-border-primary, var(--text-color));
-  font-family: var(--typography-label-md-font-family);
-  font-size: var(--typography-label-md-font-size);
-  line-height: var(--typography-label-md-line-height);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-main .bento-grid a.bento-grid-cta:hover,
-main .bento-grid a.bento-grid-cta:focus-visible {
-  background-color: var(--color-background-primary, var(--text-color));
-  color: var(--neutral-text);
-  text-decoration: none;
 }
 
 /* grid */
@@ -94,17 +83,11 @@ main .bento-grid .bento-grid-card::after {
   background: linear-gradient(to top, rgb(0 0 0 / 75%) 0%, rgb(0 0 0 / 25%) 40%, rgb(0 0 0 / 0%) 70%);
 }
 
-main .bento-grid .bento-grid-chip {
+/* appearance comes from the global tag, only placement is local */
+main .bento-grid .bento-grid-tag {
   position: absolute;
   top: var(--space-4);
   left: var(--space-4);
-  margin: 0;
-  border-radius: var(--radius-sm);
-  padding: var(--space-1) var(--space-2);
-  background-color: rgb(0 0 0 / 45%);
-  font-family: var(--typography-label-sm-font-family);
-  font-size: var(--typography-label-sm-font-size);
-  line-height: var(--typography-label-sm-line-height);
 }
 
 main .bento-grid .bento-grid-body {
@@ -119,7 +102,6 @@ main .bento-grid .bento-grid-title {
   font-family: var(--typography-h2-font-family);
   font-size: var(--typography-h2-font-size);
   line-height: 1.2;
-  letter-spacing: var(--typography-h2-letter-spacing);
   font-weight: 400;
 }
 
@@ -221,8 +203,7 @@ main .bento-grid.layout-equal-3 .bento-grid-body {
   }
 
   main .bento-grid .bento-grid-title {
-    font-size: var(--typography-h1-font-size);
-    letter-spacing: var(--typography-h1-letter-spacing);
+    /* font-size: var(--typography-h1-font-size); */
   }
 
   /* equal 4-up, portrait cards */

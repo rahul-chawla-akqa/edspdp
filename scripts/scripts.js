@@ -1,7 +1,6 @@
 import {
   loadHeader,
   loadFooter,
-  decorateIcons,
   decorateSections,
   decorateBlocks,
   decorateTemplateAndTheme,
@@ -12,6 +11,8 @@ import {
   getMetadata,
 } from './aem.js';
 import { bindOpenModalOnClick } from './open-modal.js';
+import { decorateButton } from './ui/button.js';
+import { decorateIcons } from './ui/icon.js';
 
 // brand applied when a page carries no `theme` metadata, see styles/styles.css
 const DEFAULT_THEME = 'apollo';
@@ -76,12 +77,13 @@ function buildAutoBlocks() {
 }
 
 /**
- * Decorates formatted links to style them as buttons.
+ * Decorates formatted links to style them as buttons or text links.
  * @param {HTMLElement} main The main container element
  */
-export function decorateButtons(main) {
+export async function decorateButtons(main) {
+  const tasks = [];
+
   main.querySelectorAll('p a[href]').forEach((a) => {
-    a.title = a.title || a.textContent;
     const p = a.closest('p');
     const text = a.textContent.trim();
 
@@ -93,27 +95,46 @@ export function decorateButtons(main) {
       if (new URL(a.href).href === new URL(text, window.location).href) return;
     } catch { /* continue */ }
 
-    // require authored formatting for buttonization
     const strong = a.closest('strong');
     const em = a.closest('em');
-    if (!strong && !em) return;
+    const isTextLink = !strong && !em && a.hasAttribute('data-aue-prop');
+
+    if (!strong && !em && !isTextLink) return;
 
     p.className = 'button-wrapper';
-    a.className = 'button';
-    if (strong && em) { // high-impact call-to-action
-      a.classList.add('accent');
+
+    if (isTextLink) {
+      tasks.push(decorateButton(a, {
+        variant: 'text',
+        title: a.title || text,
+        label: text,
+      }).then((button) => {
+        if (button) bindOpenModalOnClick(button);
+      }));
+      return;
+    }
+
+    let variant = 'secondary';
+    if (strong && em) {
+      variant = 'accent';
       const outer = strong.contains(em) ? strong : em;
       outer.replaceWith(a);
     } else if (strong) {
-      a.classList.add('primary');
+      variant = 'primary';
       strong.replaceWith(a);
     } else {
-      a.classList.add('secondary');
       em.replaceWith(a);
     }
 
-    bindOpenModalOnClick(a);
+    tasks.push(decorateButton(a, {
+      variant,
+      title: a.title || text,
+    }).then((button) => {
+      if (button) bindOpenModalOnClick(button);
+    }));
   });
+
+  await Promise.all(tasks);
 }
 
 /**
@@ -121,12 +142,11 @@ export function decorateButtons(main) {
  * @param {Element} main The main element
  */
 // eslint-disable-next-line import/prefer-default-export
-export function decorateMain(main) {
-  decorateIcons(main);
+export async function decorateMain(main) {
   buildAutoBlocks(main);
   decorateSections(main);
   decorateBlocks(main);
-  decorateButtons(main);
+  await decorateButtons(main);
 }
 
 /**
@@ -139,7 +159,8 @@ async function loadEager(doc) {
   if (!getMetadata('theme')) document.body.classList.add(DEFAULT_THEME);
   const main = doc.querySelector('main');
   if (main) {
-    decorateMain(main);
+    await decorateMain(main);
+    await decorateIcons(main);
     document.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);
   }

@@ -29,11 +29,19 @@ module.exports = {
     };
     config.plugins = config.plugins || [];
     config.plugins.push({
-      name: 'storybook-skip-eds-load-page',
+      name: 'storybook-eds-shims',
       transform(code, id) {
         const normalized = id.replace(/\\/g, '/');
-        if (normalized.split('?')[0].endsWith('/scripts/scripts.js')) {
+        const file = normalized.split('?')[0];
+        if (file.endsWith('/scripts/scripts.js')) {
           return code.replace(/\nloadPage\(\);/, '\nif (!window.IS_STORYBOOK) loadPage();');
+        }
+        // loadBlock resolves block JS at runtime from /blocks; Vite cannot analyze that path.
+        if (file.endsWith('/scripts/aem.js')) {
+          return code.replace(
+            'const mod = await import(',
+            'const mod = await import(/* @vite-ignore */',
+          );
         }
         return null;
       },

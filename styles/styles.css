@@ -270,7 +270,7 @@
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;
-  --radius-pill: 999px;
+	--radius-xl: 36px;
 
   /* breakpoints: media queries must repeat these literals, custom properties
      are not allowed in @media conditions. Keep both in sync. */
@@ -279,48 +279,110 @@
   --breakpoint-lg: 1200px;
 }
 
+/* Brand tokens. Accent hover/active steps are read from the design system;
+   confirm them in Figma Dev Mode. */
+:root,
 body.apollo {
-	/* Semantic Colors */
-	
-	/* Background Colors - Primary */
-	--color-background-primary: var(--apollo-800);
-	--color-background-primary-hover: var(--apollo-500);
-	--color-background-primary-active: var(--apollo-500);
-	--color-background-primary-disabled: var(--neutral-300);
+  --brand-accent: var(--apollo-800);
+  --brand-accent-hover: var(--apollo-500);
+  --brand-accent-active: var(--apollo-600);
+  --brand-accent-on-dark: var(--apollo-200);
+  --button-border-radius: var(--radius-xl);
+}
 
-	/* Text Colors - Primary */
-	--color-text-primary: var(--neutral-text);
-	--color-text-primary-hover: var(--neutral-text);
-	--color-text-primary-active: var(--neutral-text);
-	--color-text-primary-disabled: var(--neutral-600);
+body.vredestein {
+  --brand-accent: var(--vredestein-blue-500);
+  --brand-accent-hover: var(--vredestein-blue-400);
 
-	/* Border Colors - Primary */
-	--color-border-primary: var(--apollo-800);
-	--color-border-primary-hover: var(--apollo-500);
-	--color-border-primary-active: var(--apollo-500);
-	--color-border-primary-disabled: var(--neutral-300);
-
-	/* Background Colors - Secondary */
-	--color-background-secondary: var(--apollo-800);
-	--color-background-secondary-hover: var(--apollo-500);
-	--color-background-secondary-active: var(--apollo-500);
-	--color-background-secondary-disabled: var(--neutral-300);
-
-	/* Text Colors - Secondary */
-	--color-text-secondary: var(--neutral-text);
-	--color-text-secondary-hover: var(--neutral-text);
-	--color-text-secondary-active: var(--neutral-text);
-	--color-text-secondary-disabled: var(--neutral-600);
-
-	/* Border Colors - Secondary */
-	--color-border-secondary: var(--apollo-800);
-	--color-border-secondary-hover: var(--apollo-500);
-	--color-border-secondary-active: var(--apollo-500);
-	--color-border-secondary-disabled: var(--neutral-300);
+  /* blue-300 reads closest to the mockup but only reaches 3.4:1 against the
+     label, so the active step is darkened to stay AA. Confirm with design. */
+  --brand-accent-active: var(--vredestein-blue-600);
+  --brand-accent-on-dark: var(--vredestein-blue-200);
+  --button-border-radius: var(--radius-sm);
+  --color-text-link: var(--vredestein-blue-500);
+  --color-text-link-hover: var(--vredestein-blue-400);
+  --color-text-link-active: var(--vredestein-blue-600);
+  --color-text-link-visited: var(--apollo-800);
 }
 
 body.corporate {
-	--background-color: light-dark(white, beige);
+  --brand-accent: var(--corporate-purple-700);
+  --brand-accent-hover: var(--corporate-purple-500);
+  --brand-accent-active: var(--corporate-purple-600);
+  --brand-accent-on-dark: var(--corporate-purple-200);
+  --button-border-radius: var(--radius-xl);
+  --color-text-link: var(--corporate-purple-700);
+  --color-text-link-hover: var(--corporate-purple-500);
+  --color-text-link-active: var(--corporate-purple-600);
+  --color-text-link-visited: var(--corporate-purple-800);
+}
+
+/* Semantic colors. Declared on body, not :root, so that var() substitution
+   happens on the element that also carries the brand class. */
+body {
+  display: none;
+  margin: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.6;
+
+  /* primary: filled */
+  --color-background-primary: var(--brand-accent);
+  --color-background-primary-hover: var(--brand-accent-hover);
+  --color-background-primary-active: var(--brand-accent-active);
+  --color-background-primary-disabled: var(--neutral-300);
+  --color-text-primary: var(--neutral-text);
+  --color-text-primary-hover: var(--neutral-text);
+  --color-text-primary-active: var(--neutral-text);
+  --color-text-primary-disabled: var(--neutral-600);
+  --color-border-primary: var(--brand-accent);
+  --color-border-primary-hover: var(--brand-accent-hover);
+  --color-border-primary-active: var(--brand-accent-active);
+  --color-border-primary-disabled: var(--neutral-300);
+
+  /* secondary: outlined */
+  --color-background-secondary: transparent;
+  --color-background-secondary-hover: transparent;
+  --color-background-secondary-active: transparent;
+  --color-background-secondary-disabled: transparent;
+  --color-text-secondary: var(--brand-accent);
+  --color-text-secondary-hover: var(--brand-accent-hover);
+  --color-text-secondary-active: var(--brand-accent-active);
+  --color-text-secondary-disabled: var(--neutral-600);
+  --color-border-secondary: var(--brand-accent);
+  --color-border-secondary-hover: var(--brand-accent-hover);
+  --color-border-secondary-active: var(--brand-accent-active);
+  --color-border-secondary-disabled: var(--neutral-300);
+  --color-focus-ring: var(--brand-accent);
+
+  /* text link: on-light (confirm exact steps in Figma Dev Mode) */
+  --color-text-link: var(--link-color);
+  --color-text-link-hover: var(--link-hover-color);
+  --color-text-link-active: #1a2f9e;
+  --color-text-link-visited: var(--apollo-800);
+  --color-text-link-disabled: var(--neutral-600);
+}
+
+/* Dark surfaces re-point the secondary tokens at their on-dark treatment.
+   Custom properties inherit, so any button inside picks this up. */
+main .section.dark,
+.on-dark {
+  --color-text-secondary: var(--neutral-text);
+  --color-text-secondary-hover: var(--brand-accent-on-dark);
+  --color-text-secondary-active: var(--brand-accent-on-dark);
+  --color-text-secondary-disabled: var(--neutral-500);
+  --color-border-secondary: var(--neutral-text);
+  --color-border-secondary-hover: var(--brand-accent-on-dark);
+  --color-border-secondary-active: var(--brand-accent-on-dark);
+  --color-border-secondary-disabled: var(--neutral-500);
+  --color-focus-ring: var(--neutral-text);
+  --color-text-link: var(--neutral-text);
+  --color-text-link-hover: var(--neutral-text);
+  --color-text-link-active: var(--neutral-400);
+  --color-text-link-visited: var(--brand-accent-on-dark);
+  --color-text-link-disabled: var(--neutral-500);
 }
 
 /* fallback fonts */
@@ -363,16 +425,6 @@ body.corporate {
     --heading-font-size-s: 20px;
     --heading-font-size-xs: 18px;
   }
-}
-
-body {
-  display: none;
-  margin: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  font-family: var(--body-font-family);
-  font-size: var(--body-font-size-m);
-  line-height: 1.6;
 }
 
 body.appear {
@@ -635,19 +687,37 @@ button.button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: var(--space-2);
   max-width: 100%;
   margin: 0;
-  border: 2px solid transparent;
-  border-radius: 2.4em;
-  padding: 0.5em 1.2em;
-  font: inherit;
+  border: 1px solid transparent;
+  border-radius: var(--button-border-radius);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--typography-label-lg-font-family);
+  font-size: var(--typography-label-lg-font-size);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: var(--typography-label-lg-line-height);
+  letter-spacing: var(--typography-label-lg-letter-spacing);
   text-decoration: none;
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* compact size, opted into by the containing block rather than by the author */
+a.button.size-sm:any-link,
+button.button.size-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--typography-label-md-font-size);
+  line-height: var(--typography-label-md-line-height);
+  letter-spacing: var(--typography-label-md-letter-spacing);
+}
+
+a.button:focus-visible,
+button.button:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
 }
 
 a.button[aria-disabled="true"],
@@ -656,85 +726,125 @@ button.button:disabled {
   pointer-events: none;
 }
 
-a.button.primary,
-button.button.primary {
-  border-color: var(--text-color);
-  background-color: var(--text-color);
-  color: var(--background-color);
+/* `accent` is the legacy strong+em variant, it shares the primary treatment */
+:is(a, button).button.primary,
+:is(a, button).button.accent {
+  border-color: var(--color-border-primary);
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
 }
 
-a.button.primary:hover,
-a.button.primary:focus-visible,
-button.button.primary:hover,
-button.button.primary:focus-visible {
-  border-color: var(--dark-color);
-  background-color: var(--dark-color);
-  color: var(--light-color);
+:is(a, button).button.primary:hover,
+:is(a, button).button.accent:hover {
+  border-color: var(--color-border-primary-hover);
+  background-color: var(--color-background-primary-hover);
+  color: var(--color-text-primary-hover);
+}
+
+:is(a, button).button.primary:active,
+:is(a, button).button.accent:active {
+  border-color: var(--color-border-primary-active);
+  background-color: var(--color-background-primary-active);
+  color: var(--color-text-primary-active);
 }
 
 a.button.primary[aria-disabled="true"],
-a.button.primary[aria-disabled="true"]:hover,
-a.button.primary[aria-disabled="true"]:focus-visible,
+a.button.accent[aria-disabled="true"],
 button.button.primary:disabled,
-button.button.primary:disabled:hover,
-button.button.primary:disabled:focus-visible {
-  background-color: var(--light-color);
-  border-color: var(--light-color);
-  color: var(--dark-color);
+button.button.accent:disabled {
+  border-color: var(--color-border-primary-disabled);
+  background-color: var(--color-background-primary-disabled);
+  color: var(--color-text-primary-disabled);
 }
 
-a.button.secondary,
-button.button.secondary {
-  border-color: var(--text-color);
-  background-color: transparent;
-  color: var(--text-color);
+:is(a, button).button.secondary {
+  border-color: var(--color-border-secondary);
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-secondary);
 }
 
-a.button.secondary:hover,
-a.button.secondary:focus-visible,
-button.button.secondary:hover,
-button.button.secondary:focus-visible {
-  border-color: var(--dark-color);
-  background-color: var(--light-color);
-  color: var(--dark-color);
+:is(a, button).button.secondary:hover {
+  border-color: var(--color-border-secondary-hover);
+  background-color: var(--color-background-secondary-hover);
+  color: var(--color-text-secondary-hover);
+}
+
+:is(a, button).button.secondary:active {
+  border-color: var(--color-border-secondary-active);
+  background-color: var(--color-background-secondary-active);
+  color: var(--color-text-secondary-active);
 }
 
 a.button.secondary[aria-disabled="true"],
-a.button.secondary[aria-disabled="true"]:hover,
-a.button.secondary[aria-disabled="true"]:focus-visible,
-button.button.secondary:disabled,
-button.button.secondary:disabled:hover,
-button.button.secondary:disabled:focus-visible {
-  background-color: var(--light-color);
-  border-color: var(--light-color);
-  color: var(--dark-color);
+button.button.secondary:disabled {
+  border-color: var(--color-border-secondary-disabled);
+  background-color: var(--color-background-secondary-disabled);
+  color: var(--color-text-secondary-disabled);
 }
 
-/* high-impact call-to-action */
-a.button.accent,
-button.button.accent {
-  border-color: var(--link-color);
-  background-color: var(--link-color);
-  color: var(--background-color);
+/* text link variant: inline label + trailing icon, no pill chrome */
+a.button.text:any-link,
+a.button.text.size-sm:any-link,
+a.button.text.size-md:any-link,
+a.button.text.size-xs:any-link,
+button.button.text,
+button.button.text.size-sm,
+button.button.text.size-md,
+button.button.text.size-xs {
+  gap: var(--space-1);
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background-color: transparent;
+  color: var(--color-text-link);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: normal;
 }
 
-a.button.accent:hover,
-a.button.accent:focus-visible,
-button.button.accent:hover,
-button.button.accent:focus-visible {
-  border-color: var(--link-hover-color);
-  background-color: var(--link-hover-color);
+:is(a, button).button.text:hover {
+  color: var(--color-text-link-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-a.button.accent[aria-disabled="true"],
-a.button.accent[aria-disabled="true"]:hover,
-a.button.accent[aria-disabled="true"]:focus-visible,
-button.button.accent:disabled,
-button.button.accent:disabled:hover,
-button.button.accent:disabled:focus-visible {
-  background-color: var(--light-color);
-  border-color: var(--light-color);
-  color: var(--dark-color);
+:is(a, button).button.text:active {
+  color: var(--color-text-link-active);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a.button.text:visited {
+  color: var(--color-text-link-visited);
+}
+
+a.button.text:visited:hover,
+a.button.text:visited:active {
+  color: var(--color-text-link-visited);
+}
+
+a.button.text[aria-disabled="true"],
+button.button.text:disabled {
+  color: var(--color-text-link-disabled);
+  text-decoration: none;
+}
+
+:is(a, button).button.text.size-md {
+  font-size: var(--typography-label-md-font-size);
+  line-height: var(--typography-label-md-line-height);
+  letter-spacing: var(--typography-label-md-letter-spacing);
+}
+
+:is(a, button).button.text.size-sm {
+  font-size: var(--typography-label-sm-font-size);
+  line-height: var(--typography-label-sm-line-height);
+  letter-spacing: var(--typography-label-sm-letter-spacing);
+}
+
+:is(a, button).button.text.size-xs {
+  font-size: var(--typography-label-xs-font-size);
+  line-height: var(--typography-label-xs-line-height);
+  letter-spacing: var(--typography-label-xs-letter-spacing);
 }
 
 main img {
@@ -744,14 +854,48 @@ main img {
 }
 
 .icon {
-  display: inline-block;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
   height: 24px;
   width: 24px;
 }
 
-.icon img {
-  height: 100%;
+.icon svg {
   width: 100%;
+  height: 100%;
+  fill: currentcolor;
+}
+
+/* icons sit inline with the label and scale with the button size */
+a.button .icon,
+button.button .icon {
+  width: 1.25em;
+  height: 1.25em;
+}
+
+/* square treatment for icon-only controls created by scripts/ui/button.js */
+:is(a, button).button.icon-only {
+  padding: var(--space-3);
+  aspect-ratio: 1;
+}
+
+:is(a, button).button.icon-only.size-sm {
+  padding: var(--space-2);
+}
+
+/* tags, created by scripts/tag.js — blocks own the placement */
+.tag {
+  display: inline-block;
+  margin: 0;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  background-color: rgb(0 0 0 / 45%);
+  color: var(--neutral-text);
+  font-family: var(--typography-label-sm-font-family);
+  font-size: var(--typography-label-sm-font-size);
+  line-height: var(--typography-label-sm-line-height);
 }
 
 /* sections */
@@ -779,6 +923,13 @@ main > .section:first-of-type {
 main .section.light,
 main .section.highlight {
   background-color: var(--light-color);
+  margin: 0;
+  padding-block: var(--space-10);
+}
+
+main .section.dark {
+  background-color: var(--neutral-900);
+  color: var(--neutral-text);
   margin: 0;
   padding-block: var(--space-10);
 }

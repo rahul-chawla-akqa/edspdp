@@ -33,6 +33,10 @@
             {
               "name": "Highlight",
               "value": "highlight"
+            },
+            {
+              "name": "Dark",
+              "value": "dark"
             }
           ]
         }
@@ -60,7 +64,8 @@
         "post-body",
         "carousel",
         "feature-flags",
-        "form"
+        "form",
+        "footer"
       ]
     }
   ]

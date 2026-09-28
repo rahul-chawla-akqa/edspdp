@@ -1,5 +1,7 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
+import { createTag } from '../../scripts/ui/tag.js';
+import { decorateButton } from '../../scripts/ui/button.js';
 
 const CALENDAR_LAYOUT = 'layout-equal-3';
 
@@ -63,8 +65,12 @@ function buildHeader(rows) {
   header.append(text);
 
   if (link) {
-    link.className = 'bento-grid-cta';
-    link.textContent = link.textContent.trim() || link.title;
+    decorateButton(link, {
+      variant: 'secondary',
+      size: 'sm',
+      classes: 'bento-grid-cta',
+      label: link.textContent.trim() || link.title,
+    });
     moveInstrumentation(linkRow, link);
     header.append(link);
   }
@@ -169,9 +175,10 @@ function buildCard(row, calendarDates) {
     item.append(picture);
   }
 
-  if (chip) {
-    chip.className = 'bento-grid-chip';
-    item.append(chip);
+  const tag = createTag(cellText(chip), { classes: 'bento-grid-tag' });
+  if (tag) {
+    moveInstrumentation(chip, tag);
+    item.append(tag);
   }
 
   const body = document.createElement('div');

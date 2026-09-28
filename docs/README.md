@@ -34,7 +34,7 @@ npm run storybook:preview    # serve the static build on :6007 (keeps .html deep
 
 Toolbar:
 
-- **Theme:** `default`, `corporate`, `retail` (adds the same class on `document.body` as EDS theme metadata)
+- **Theme:** `apollo`, `vredestein`, `corporate` (adds the same class on `document.body` as EDS theme metadata)
 - **Viewport:** Mobile (390px, ≤600px) or Desktop (1280px, >600px). Each block also has Mobile and Desktop stories for deep links.
 
 When you add a block, add `storybook/stories/{name}.stories.js` that supplies pre-decoration row markup and calls the block `decorate()` function. Put fixtures in `storybook/fixtures/`. Keep stories out of `blocks/` so AEM Code Sync does not serve them.

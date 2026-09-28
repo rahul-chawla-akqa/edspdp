@@ -1,9 +1,6 @@
 import '../styles/styles.css';
 import '../styles/lazy-styles.css';
 import '../styles/fonts.css';
-import '../storybook/themes/default.css';
-import '../storybook/themes/corporate.css';
-import '../storybook/themes/retail.css';
 import { installFetchStub } from '../storybook/fetch-stub.js';
 import { edsViewports } from '../storybook/stories/_shared.js';
 import { bindModalTriggers } from '../blocks/modal/modal.js';
@@ -13,11 +10,12 @@ bindModalTriggers();
 
 document.body.classList.add('appear');
 
-const THEME_CLASSES = ['default', 'corporate', 'retail'];
+// same brand classes scripts.js puts on <body> from the page `theme` metadata
+const THEME_CLASSES = ['apollo', 'vredestein', 'corporate'];
 
 function applyTheme(theme) {
   THEME_CLASSES.forEach((name) => document.body.classList.remove(name));
-  const next = THEME_CLASSES.includes(theme) ? theme : 'default';
+  const next = THEME_CLASSES.includes(theme) ? theme : 'apollo';
   document.body.classList.add(next, 'appear');
 }
 
@@ -27,13 +25,13 @@ const preview = {
     theme: {
       name: 'Theme',
       description: 'Brand theme (body class, same as EDS page metadata)',
-      defaultValue: 'default',
+      defaultValue: 'apollo',
       toolbar: {
         icon: 'paintbrush',
         items: [
-          { value: 'default', title: 'Default' },
+          { value: 'apollo', title: 'Apollo Tyres' },
+          { value: 'vredestein', title: 'Vredestein' },
           { value: 'corporate', title: 'Corporate' },
-          { value: 'retail', title: 'Retail' },
         ],
         dynamicTitle: true,
       },

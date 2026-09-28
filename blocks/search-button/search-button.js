@@ -1,28 +1,26 @@
-import { decorateIcons } from '../../scripts/aem.js';
+import { createIcon } from '../../scripts/ui/icon.js';
 import { bindOpenModalOnClick } from '../../scripts/open-modal.js';
 
 /**
  * @param {Element} parent
  * @param {string} iconName
- * @returns {HTMLSpanElement}
+ * @param {string} wrapClass
  */
-function createIconWrap(parent, iconName) {
+async function appendIconWrap(parent, iconName, wrapClass) {
   const wrap = document.createElement('span');
-  wrap.className = `search-button-${iconName === 'search' ? 'search' : 'go'}`;
+  wrap.className = wrapClass;
   wrap.setAttribute('aria-hidden', 'true');
 
-  const icon = document.createElement('span');
-  icon.className = `icon icon-${iconName}`;
-  wrap.append(icon);
+  const icon = await createIcon(iconName);
+  if (icon) wrap.append(icon);
   parent.append(wrap);
-  return wrap;
 }
 
 /**
  * Decorates the search-bar styled control. Click opens a fragment in a modal.
  * @param {Element} block
  */
-export default function decorate(block) {
+export default async function decorate(block) {
   const link = block.querySelector('a[href]');
   const href = link?.getAttribute('href') || '';
   const label = (link?.textContent || block.textContent || '').trim();
@@ -39,15 +37,14 @@ export default function decorate(block) {
   }
   if (label) trigger.setAttribute('aria-label', label);
 
-  createIconWrap(trigger, 'search');
+  await appendIconWrap(trigger, 'search', 'search-button-search');
 
   const text = document.createElement('span');
   text.className = 'search-button-label';
   text.textContent = label;
   trigger.append(text);
 
-  createIconWrap(trigger, 'arrow');
+  await appendIconWrap(trigger, 'arrow', 'search-button-go');
 
   block.replaceChildren(trigger);
-  decorateIcons(block);
 }
