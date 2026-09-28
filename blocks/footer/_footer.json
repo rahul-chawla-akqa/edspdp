@@ -9,7 +9,68 @@
             "resourceType": "core/franklin/components/block/v1/block",
             "template": {
               "name": "Footer",
-              "model": "footer"
+              "model": "footer",
+              "filter": "footer"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Footer Nav Column",
+      "id": "footer-nav-column",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Footer Nav Column",
+              "model": "footer-nav-column"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Footer Logo",
+      "id": "footer-logo",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Footer Logo",
+              "model": "footer-logo"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Footer Legal",
+      "id": "footer-legal",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Footer Legal",
+              "model": "footer-legal"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Footer Social",
+      "id": "footer-social",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Footer Social",
+              "model": "footer-social"
             }
           }
         }
@@ -19,41 +80,22 @@
   "models": [
     {
       "id": "footer",
+      "fields": []
+    },
+    {
+      "id": "footer-nav-column",
       "fields": [
         {
-          "component": "tab",
-          "label": "Background"
-        },
-        {
-          "component": "reference",
-          "valueType": "string",
-          "name": "backgroundImage",
-          "label": "Background Image",
-          "multi": false,
-          "description": "Optional full-bleed image behind the footer content"
-        },
-        {
           "component": "text",
           "valueType": "string",
-          "name": "backgroundImageAlt",
-          "label": "Background Image Alt",
-          "value": ""
-        },
-        {
-          "component": "tab",
-          "label": "Navigation"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "navCol1Title",
-          "label": "Column 1 Heading",
+          "name": "heading",
+          "label": "Column Heading",
           "description": "For example THE PROGRESS"
         },
         {
           "component": "container",
-          "name": "navCol1Links",
-          "label": "Column 1 Links",
+          "name": "links",
+          "label": "Links",
           "multi": true,
           "collapsible": true,
           "fields": [
@@ -70,123 +112,12 @@
               "label": "Link Text"
             }
           ]
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "navCol2Title",
-          "label": "Column 2 Heading",
-          "description": "For example THE BUREAU"
-        },
-        {
-          "component": "container",
-          "name": "navCol2Links",
-          "label": "Column 2 Links",
-          "multi": true,
-          "collapsible": true,
-          "fields": [
-            {
-              "component": "aem-content",
-              "valueType": "string",
-              "name": "link",
-              "label": "Link"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "linkText",
-              "label": "Link Text"
-            }
-          ]
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "navCol3Title",
-          "label": "Column 3 Heading",
-          "description": "For example THE IMPACT"
-        },
-        {
-          "component": "container",
-          "name": "navCol3Links",
-          "label": "Column 3 Links",
-          "multi": true,
-          "collapsible": true,
-          "fields": [
-            {
-              "component": "aem-content",
-              "valueType": "string",
-              "name": "link",
-              "label": "Link"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "linkText",
-              "label": "Link Text"
-            }
-          ]
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "navCol4Title",
-          "label": "Column 4 Heading",
-          "description": "For example THE PEOPLE"
-        },
-        {
-          "component": "container",
-          "name": "navCol4Links",
-          "label": "Column 4 Links",
-          "multi": true,
-          "collapsible": true,
-          "fields": [
-            {
-              "component": "aem-content",
-              "valueType": "string",
-              "name": "link",
-              "label": "Link"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "linkText",
-              "label": "Link Text"
-            }
-          ]
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "navCol5Title",
-          "label": "Column 5 Heading",
-          "description": "For example PARTNER WITH US"
-        },
-        {
-          "component": "container",
-          "name": "navCol5Links",
-          "label": "Column 5 Links",
-          "multi": true,
-          "collapsible": true,
-          "fields": [
-            {
-              "component": "aem-content",
-              "valueType": "string",
-              "name": "link",
-              "label": "Link"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "linkText",
-              "label": "Link Text"
-            }
-          ]
-        },
-        {
-          "component": "tab",
-          "label": "Branding"
-        },
+        }
+      ]
+    },
+    {
+      "id": "footer-logo",
+      "fields": [
         {
           "component": "reference",
           "valueType": "string",
@@ -207,11 +138,12 @@
           "name": "logoLink",
           "label": "Logo Link",
           "description": "Optional. Defaults to the site home page when empty."
-        },
-        {
-          "component": "tab",
-          "label": "Legal"
-        },
+        }
+      ]
+    },
+    {
+      "id": "footer-legal",
+      "fields": [
         {
           "component": "text",
           "valueType": "string",
@@ -257,48 +189,59 @@
           "name": "cookieLinkText",
           "label": "Cookie Notice Text",
           "value": "Cookie Notice"
-        },
-        {
-          "component": "tab",
-          "label": "Social"
-        },
+        }
+      ]
+    },
+    {
+      "id": "footer-social",
+      "fields": [
         {
           "component": "aem-content",
           "valueType": "string",
           "name": "socialFacebook",
           "label": "Facebook URL",
-          "description": "Leave empty to hide the Facebook icon"
+          "description": "Leave empty to hide the Facebook link"
         },
         {
           "component": "aem-content",
           "valueType": "string",
           "name": "socialX",
           "label": "X URL",
-          "description": "Leave empty to hide the X icon"
+          "description": "Leave empty to hide the X link"
         },
         {
           "component": "aem-content",
           "valueType": "string",
           "name": "socialInstagram",
           "label": "Instagram URL",
-          "description": "Leave empty to hide the Instagram icon"
+          "description": "Leave empty to hide the Instagram link"
         },
         {
           "component": "aem-content",
           "valueType": "string",
           "name": "socialLinkedin",
           "label": "LinkedIn URL",
-          "description": "Leave empty to hide the LinkedIn icon"
+          "description": "Leave empty to hide the LinkedIn link"
         },
         {
           "component": "aem-content",
           "valueType": "string",
           "name": "socialYoutube",
           "label": "YouTube URL",
-          "description": "Leave empty to hide the YouTube icon"
+          "description": "Leave empty to hide the YouTube link"
         }
       ]
     }
   ],
-  "filters": []
+  "filters": [
+    {
+      "id": "footer",
+      "components": [
+        "footer-nav-column",
+        "footer-logo",
+        "footer-legal",
+        "footer-social"
+      ]
+    }
+  ]
 }

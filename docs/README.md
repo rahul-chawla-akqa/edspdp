@@ -39,6 +39,8 @@ Toolbar:
 
 When you add a block, add `storybook/stories/{name}.stories.js` that supplies pre-decoration row markup and calls the block `decorate()` function. Put fixtures in `storybook/fixtures/`. Keep stories out of `blocks/` so AEM Code Sync does not serve them.
 
+Footer container authoring (Footer Section, child items, `/footer` page): see [../blocks/footer/AUTHORING.md](../blocks/footer/AUTHORING.md).
+
 CI uploads `storybook-static` as the `storybook-qa` artifact on every push.
 
 ## Quick reference

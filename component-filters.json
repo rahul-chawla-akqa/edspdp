@@ -25,7 +25,12 @@
       "post-body",
       "carousel",
       "feature-flags",
-      "form",
+      "form"
+    ]
+  },
+  {
+    "id": "footer-section",
+    "components": [
       "footer"
     ]
   },
@@ -66,6 +71,15 @@
       "image",
       "button",
       "title"
+    ]
+  },
+  {
+    "id": "footer",
+    "components": [
+      "footer-nav-column",
+      "footer-logo",
+      "footer-legal",
+      "footer-social"
     ]
   },
   {

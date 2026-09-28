@@ -75,6 +75,22 @@
               }
             }
           }
+        },
+        {
+          "title": "Footer Section",
+          "id": "footer-section",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/section/v1/section",
+                "template": {
+                  "name": "Footer",
+                  "model": "footer-section",
+                  "filter": "footer-section"
+                }
+              }
+            }
+          }
         }
       ]
     },
@@ -243,7 +259,68 @@
                 "resourceType": "core/franklin/components/block/v1/block",
                 "template": {
                   "name": "Footer",
-                  "model": "footer"
+                  "model": "footer",
+                  "filter": "footer"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Footer Nav Column",
+          "id": "footer-nav-column",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Footer Nav Column",
+                  "model": "footer-nav-column"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Footer Logo",
+          "id": "footer-logo",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Footer Logo",
+                  "model": "footer-logo"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Footer Legal",
+          "id": "footer-legal",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Footer Legal",
+                  "model": "footer-legal"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Footer Social",
+          "id": "footer-social",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Footer Social",
+                  "model": "footer-social"
                 }
               }
             }
