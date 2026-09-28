@@ -22,6 +22,14 @@ Add these **eight** child items to the Footer block (Content Tree order matters 
 
 **Navigation columns:** the first Footer Nav Column child maps to grid column 1, the second to column 2, and so on. Authors can add or remove links inside each column; they should not add a sixth Footer Nav Column if the layout must stay five columns wide.
 
+**Item Type field:** every child item has an `Item Type` dropdown with a single value, prefilled from the item template. It is what the block reads to tell the items apart on preview and live, where authoring attributes are absent. Leave it as it is.
+
+**Social networks** are matched by URL, so leaving one platform empty does not shift the others.
+
+## After changing the models
+
+Universal Editor reads `component-definition.json`, `component-models.json`, and `component-filters.json` from the branch, so run `npm run build:json` and push before the new items appear in the editor. A page already open in Universal Editor needs a reload to pick them up.
+
 ## Page metadata
 
 Every page that should show this footer needs metadata pointing at the footer document, for example:

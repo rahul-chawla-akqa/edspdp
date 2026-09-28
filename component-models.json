@@ -488,12 +488,22 @@
     ]
   },
   {
-    "id": "footer",
-    "fields": []
-  },
-  {
     "id": "footer-nav-column",
     "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "type",
+        "label": "Item Type",
+        "value": "nav-column",
+        "description": "Set automatically. Do not change.",
+        "options": [
+          {
+            "name": "Nav Column",
+            "value": "nav-column"
+          }
+        ]
+      },
       {
         "component": "text",
         "valueType": "string",
@@ -528,6 +538,20 @@
     "id": "footer-logo",
     "fields": [
       {
+        "component": "select",
+        "valueType": "string",
+        "name": "type",
+        "label": "Item Type",
+        "value": "logo",
+        "description": "Set automatically. Do not change.",
+        "options": [
+          {
+            "name": "Logo",
+            "value": "logo"
+          }
+        ]
+      },
+      {
         "component": "reference",
         "valueType": "string",
         "name": "logo",
@@ -554,6 +578,20 @@
     "id": "footer-legal",
     "fields": [
       {
+        "component": "select",
+        "valueType": "string",
+        "name": "type",
+        "label": "Item Type",
+        "value": "legal",
+        "description": "Set automatically. Do not change.",
+        "options": [
+          {
+            "name": "Legal",
+            "value": "legal"
+          }
+        ]
+      },
+      {
         "component": "text",
         "valueType": "string",
         "name": "copyright",
@@ -563,39 +601,39 @@
       {
         "component": "aem-content",
         "valueType": "string",
-        "name": "privacyLink",
+        "name": "legalLinks_privacyLink",
         "label": "Privacy Notice Link"
       },
       {
         "component": "text",
         "valueType": "string",
-        "name": "privacyLinkText",
+        "name": "legalLinks_privacyLinkText",
         "label": "Privacy Notice Text",
         "value": "Privacy Notice"
       },
       {
         "component": "aem-content",
         "valueType": "string",
-        "name": "termsLink",
+        "name": "legalLinks_termsLink",
         "label": "Terms & Conditions Link"
       },
       {
         "component": "text",
         "valueType": "string",
-        "name": "termsLinkText",
+        "name": "legalLinks_termsLinkText",
         "label": "Terms & Conditions Text",
         "value": "Terms & Conditions"
       },
       {
         "component": "aem-content",
         "valueType": "string",
-        "name": "cookieLink",
+        "name": "legalLinks_cookieLink",
         "label": "Cookie Notice Link"
       },
       {
         "component": "text",
         "valueType": "string",
-        "name": "cookieLinkText",
+        "name": "legalLinks_cookieLinkText",
         "label": "Cookie Notice Text",
         "value": "Cookie Notice"
       }
@@ -605,37 +643,51 @@
     "id": "footer-social",
     "fields": [
       {
+        "component": "select",
+        "valueType": "string",
+        "name": "type",
+        "label": "Item Type",
+        "value": "social",
+        "description": "Set automatically. Do not change.",
+        "options": [
+          {
+            "name": "Social",
+            "value": "social"
+          }
+        ]
+      },
+      {
         "component": "aem-content",
         "valueType": "string",
-        "name": "socialFacebook",
+        "name": "socialLinks_facebook",
         "label": "Facebook URL",
         "description": "Leave empty to hide the Facebook link"
       },
       {
         "component": "aem-content",
         "valueType": "string",
-        "name": "socialX",
+        "name": "socialLinks_x",
         "label": "X URL",
         "description": "Leave empty to hide the X link"
       },
       {
         "component": "aem-content",
         "valueType": "string",
-        "name": "socialInstagram",
+        "name": "socialLinks_instagram",
         "label": "Instagram URL",
         "description": "Leave empty to hide the Instagram link"
       },
       {
         "component": "aem-content",
         "valueType": "string",
-        "name": "socialLinkedin",
+        "name": "socialLinks_linkedin",
         "label": "LinkedIn URL",
         "description": "Leave empty to hide the LinkedIn link"
       },
       {
         "component": "aem-content",
         "valueType": "string",
-        "name": "socialYoutube",
+        "name": "socialLinks_youtube",
         "label": "YouTube URL",
         "description": "Leave empty to hide the YouTube link"
       }

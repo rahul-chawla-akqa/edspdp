@@ -1,167 +1,145 @@
 const NAV_COLUMN_SLOTS = 5;
 
+const ITEM_TYPES = ['nav-column', 'logo', 'legal', 'social'];
+
 const SOCIAL_NETWORKS = [
-  { key: 'facebook', label: 'Facebook' },
-  { key: 'x', label: 'X' },
-  { key: 'instagram', label: 'Instagram' },
-  { key: 'linkedin', label: 'LinkedIn' },
-  { key: 'youtube', label: 'YouTube' },
+  { key: 'facebook', label: 'Facebook', match: /facebook\./i },
+  { key: 'x', label: 'X', match: /(^|\/\/)(www\.)?(x|twitter)\./i },
+  { key: 'instagram', label: 'Instagram', match: /instagram\./i },
+  { key: 'linkedin', label: 'LinkedIn', match: /linkedin\./i },
+  { key: 'youtube', label: 'YouTube', match: /(youtube\.|youtu\.be)/i },
 ];
 
 function cellText(cell) {
   if (!cell) return '';
-  return (cell.innerText || cell.textContent || '').trim();
+  return (cell.textContent || '').trim();
 }
 
-function rowKind(row) {
-  const resource = row.querySelector('[data-aue-resource]');
-  const path = resource?.getAttribute('data-aue-resource') || '';
-  if (path.includes('footer-nav-column')) return 'nav-column';
-  if (path.includes('footer-logo')) return 'logo';
-  if (path.includes('footer-legal')) return 'legal';
-  if (path.includes('footer-social')) return 'social';
-
-  const label = cellText(row.firstElementChild).toLowerCase();
-  if (label.includes('nav column')) return 'nav-column';
-  if (label.includes('footer logo') || (label.includes('logo') && !label.includes('nav'))) return 'logo';
-  if (label.includes('legal')) return 'legal';
-  if (label.includes('social')) return 'social';
-  return 'unknown';
+/**
+ * Each footer child model carries a fixed `type` property, so the delivered markup
+ * starts every row with the item type. That keeps parsing identical in the editor,
+ * on preview, and on live, where authoring attributes are absent.
+ * @param {Element} row block row
+ * @returns {string} item type, or an empty string when the row is not a footer item
+ */
+function rowType(row) {
+  const token = cellText(row.firstElementChild).toLowerCase();
+  return ITEM_TYPES.includes(token) ? token : '';
 }
 
-function dataCells(row) {
+function contentCells(row) {
   const cells = [...row.children];
-  const kind = rowKind(row);
-  if (kind !== 'unknown' && cells.length > 1) {
-    const first = cellText(cells[0]).toLowerCase();
-    if (first.includes('footer')) return cells.slice(1);
-  }
-  return cells;
+  return rowType(row) ? cells.slice(1) : cells;
 }
 
-function extractAnchors(container) {
-  if (!container) return [];
-  return [...container.querySelectorAll('a[href]')].map((anchor) => ({
-    href: anchor.getAttribute('href'),
-    text: anchor.textContent.trim() || anchor.getAttribute('href'),
-    anchor,
-  })).filter((entry) => entry.href && !/^javascript:/i.test(entry.href));
+function anchorsIn(element) {
+  if (!element) return [];
+  return [...element.querySelectorAll('a[href]')]
+    .filter((anchor) => !/^javascript:/i.test(anchor.getAttribute('href')));
 }
 
-function buildTextLink({ href, text, anchor }, className, moveInstrumentation) {
-  const link = document.createElement('a');
-  link.href = href;
-  link.textContent = text;
-  link.className = className;
-  if (anchor && moveInstrumentation) moveInstrumentation(anchor, link);
-  return link;
+function styleAnchor(anchor, className, text) {
+  anchor.className = className;
+  if (text) anchor.textContent = text;
+  if (!anchor.textContent.trim()) anchor.textContent = anchor.getAttribute('href');
+  return anchor;
 }
 
-function buildNavColumn(row, moveInstrumentation) {
+function buildNavColumn(row) {
   const column = document.createElement('div');
   column.className = 'footer-nav-column';
-  if (moveInstrumentation) moveInstrumentation(row, column);
 
-  const cells = dataCells(row);
-  const headingText = cellText(cells[0]);
+  const cells = contentCells(row);
+  const [headingCell, ...linkCells] = cells;
+  const headingText = cellText(headingCell);
   if (headingText) {
     const heading = document.createElement('p');
     heading.className = 'footer-nav-heading';
     heading.textContent = headingText;
-    const headingCell = cells[0];
-    if (headingCell && moveInstrumentation) moveInstrumentation(headingCell, heading);
     column.append(heading);
   }
 
-  const list = document.createElement('ul');
-  list.className = 'footer-nav-links';
-  const linkCells = cells.slice(1);
-  const anchors = linkCells.length
-    ? linkCells.flatMap((cell) => extractAnchors(cell))
-    : extractAnchors(row);
+  const anchors = linkCells.flatMap((cell) => anchorsIn(cell));
+  if (anchors.length) {
+    const list = document.createElement('ul');
+    list.className = 'footer-nav-links';
+    anchors.forEach((anchor) => {
+      const item = document.createElement('li');
+      item.append(styleAnchor(anchor, 'footer-nav-link'));
+      list.append(item);
+    });
+    column.append(list);
+  }
 
-  anchors.forEach(({ href, text, anchor }) => {
-    const item = document.createElement('li');
-    item.append(buildTextLink({ href, text, anchor }, 'footer-nav-link', moveInstrumentation));
-    list.append(item);
-  });
-
-  if (list.children.length) column.append(list);
   return column;
 }
 
-function buildLogo(row, moveInstrumentation) {
+function buildBrand(row) {
   const brand = document.createElement('div');
   brand.className = 'footer-brand';
-  if (moveInstrumentation) moveInstrumentation(row, brand);
 
-  const logoLink = extractAnchors(row)[0];
   const media = row.querySelector('picture') || row.querySelector('img');
   if (!media) return brand;
 
-  const wrap = document.createElement(logoLink ? 'a' : 'div');
+  const [logoLink] = anchorsIn(row);
   if (logoLink) {
-    wrap.href = logoLink.href;
-    wrap.className = 'footer-logo-link';
-    if (moveInstrumentation) moveInstrumentation(logoLink.anchor, wrap);
+    logoLink.className = 'footer-logo-link';
+    logoLink.textContent = '';
+    logoLink.append(media);
+    brand.append(logoLink);
+  } else {
+    brand.append(media);
   }
 
-  if (moveInstrumentation) moveInstrumentation(media, media);
-  wrap.append(media);
-  brand.append(wrap);
   return brand;
 }
 
-function buildLegal(row, moveInstrumentation) {
+function buildLegal(row) {
   const legal = document.createElement('div');
   legal.className = 'footer-legal';
-  if (moveInstrumentation) moveInstrumentation(row, legal);
 
-  const cells = dataCells(row);
-  const copyrightCell = cells.find((cell) => !cell.querySelector('a[href]') && cellText(cell));
-  const copyrightText = cellText(copyrightCell) || cellText(cells[0]);
-
+  const cells = contentCells(row);
+  const copyrightText = cellText(cells.find((cell) => !anchorsIn(cell).length));
   if (copyrightText) {
-    const copy = document.createElement('p');
-    copy.className = 'footer-copyright';
-    copy.textContent = copyrightText;
-    if (copyrightCell && moveInstrumentation) moveInstrumentation(copyrightCell, copy);
-    legal.append(copy);
+    const copyright = document.createElement('p');
+    copyright.className = 'footer-copyright';
+    copyright.textContent = copyrightText;
+    legal.append(copyright);
   }
 
-  const linksWrap = document.createElement('div');
-  linksWrap.className = 'footer-legal-links';
-  extractAnchors(row).forEach(({ href, text, anchor }) => {
-    linksWrap.append(buildTextLink({ href, text, anchor }, 'footer-legal-link', moveInstrumentation));
-  });
-  if (linksWrap.children.length) legal.append(linksWrap);
+  const anchors = anchorsIn(row);
+  if (anchors.length) {
+    const links = document.createElement('div');
+    links.className = 'footer-legal-links';
+    anchors.forEach((anchor) => links.append(styleAnchor(anchor, 'footer-legal-link')));
+    legal.append(links);
+  }
 
   return legal;
 }
 
-function buildSocial(row, moveInstrumentation) {
+function buildSocial(row) {
   const social = document.createElement('div');
   social.className = 'footer-social';
-  if (moveInstrumentation) moveInstrumentation(row, social);
+
+  const anchors = anchorsIn(row);
+  if (!anchors.length) return social;
 
   const list = document.createElement('ul');
   list.className = 'footer-social-list';
-
-  const anchors = extractAnchors(row);
-  anchors.forEach(({ href, text, anchor }, index) => {
-    const network = SOCIAL_NETWORKS[index] || { key: 'link', label: text || 'Social' };
+  anchors.forEach((anchor, index) => {
+    const href = anchor.getAttribute('href');
+    const network = SOCIAL_NETWORKS.find(({ match }) => match.test(href))
+      || SOCIAL_NETWORKS[index]
+      || { key: 'link', label: anchor.textContent.trim() || 'Social' };
     const item = document.createElement('li');
-    const link = buildTextLink(
-      { href, text: network.label, anchor },
-      `footer-social-link footer-social-${network.key}`,
-      moveInstrumentation,
-    );
+    const link = styleAnchor(anchor, `footer-social-link footer-social-${network.key}`, network.label);
     link.setAttribute('aria-label', network.label);
     item.append(link);
     list.append(item);
   });
+  social.append(list);
 
-  if (list.children.length) social.append(list);
   return social;
 }
 
@@ -169,42 +147,68 @@ function applySectionBackground(section, shell) {
   const background = section?.dataset?.backgroundImage;
   if (!background) return;
   shell.style.setProperty('--footer-background-image', `url("${background}")`);
-  shell.dataset.backgroundImage = background;
-  const alt = section.dataset.backgroundImageAlt;
-  if (alt) shell.dataset.backgroundImageAlt = alt;
 }
 
-function renderFooterContent(shell, sourceBlock, moveInstrumentation) {
-  const rows = [...sourceBlock.children];
-  const navRows = rows.filter((row) => rowKind(row) === 'nav-column').slice(0, NAV_COLUMN_SLOTS);
-  const logoRow = rows.find((row) => rowKind(row) === 'logo');
-  const legalRow = rows.find((row) => rowKind(row) === 'legal');
-  const socialRow = rows.find((row) => rowKind(row) === 'social');
+/**
+ * Rebuilds the authored rows of a footer block into the footer layout.
+ * @param {Element} block the footer block holding authored item rows
+ * @param {Function} [moveInstrumentation] carries authoring attributes to the new elements
+ * @returns {Element} the footer shell, already appended to the block
+ */
+function renderFooter(block, moveInstrumentation) {
+  const rows = [...block.children];
+  const navRows = rows.filter((row) => rowType(row) === 'nav-column').slice(0, NAV_COLUMN_SLOTS);
+  const rowOfType = (type) => rows.find((row) => rowType(row) === type);
+
+  const shell = document.createElement('div');
+  shell.className = 'footer-shell';
 
   const nav = document.createElement('nav');
   nav.className = 'footer-nav';
   nav.setAttribute('aria-label', 'Footer');
-
-  [...Array(NAV_COLUMN_SLOTS)].forEach((_, index) => {
+  [...Array(NAV_COLUMN_SLOTS)].forEach((unused, index) => {
     const slot = document.createElement('div');
     slot.className = 'footer-nav-slot';
-    if (navRows[index]) slot.append(buildNavColumn(navRows[index], moveInstrumentation));
+    const row = navRows[index];
+    if (row) {
+      const column = buildNavColumn(row);
+      if (moveInstrumentation) moveInstrumentation(row, column);
+      slot.append(column);
+    }
     nav.append(slot);
   });
   shell.append(nav);
 
-  if (logoRow) shell.append(buildLogo(logoRow, moveInstrumentation));
+  const logoRow = rowOfType('logo');
+  if (logoRow) {
+    const brand = buildBrand(logoRow);
+    if (moveInstrumentation) moveInstrumentation(logoRow, brand);
+    shell.append(brand);
+  }
 
   const bar = document.createElement('div');
   bar.className = 'footer-bar';
-  if (legalRow) bar.append(buildLegal(legalRow, moveInstrumentation));
-  if (socialRow) bar.append(buildSocial(socialRow, moveInstrumentation));
+  const legalRow = rowOfType('legal');
+  if (legalRow) {
+    const legal = buildLegal(legalRow);
+    if (moveInstrumentation) moveInstrumentation(legalRow, legal);
+    bar.append(legal);
+  }
+  const socialRow = rowOfType('social');
+  if (socialRow) {
+    const social = buildSocial(socialRow);
+    if (moveInstrumentation) moveInstrumentation(socialRow, social);
+    bar.append(social);
+  }
   if (bar.childElementCount) shell.append(bar);
+
+  block.replaceChildren(shell);
+  return shell;
 }
 
 export {
   NAV_COLUMN_SLOTS,
-  rowKind,
+  rowType,
   applySectionBackground,
-  renderFooterContent,
+  renderFooter,
 };
