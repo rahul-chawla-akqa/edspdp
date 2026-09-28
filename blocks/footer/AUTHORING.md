@@ -5,11 +5,9 @@ The site footer is loaded from a dedicated content page (default path `/footer`,
 ## Setup on the footer page
 
 1. Create or open the footer page (for example `/footer`).
-2. Add a **Footer Section** (recommended; supports background image in section metadata) **or** a default **Section**.
-3. For **Footer Section**, set **Background Image** and alt text in section metadata.
+2. Add a **Footer Section** (not the default Section type).
+3. In section metadata, set **Background Image** and alt text (optional full-bleed background).
 4. Insert one **Footer** block inside that section.
-
-The **Footer** block appears in the block list when the active section uses the default section filter or the **Footer Section** filter. **Footer Nav Column**, **Footer Logo**, and other child types only appear when inserting into an existing **Footer** block, not at section level.
 
 ## Footer block children
 
