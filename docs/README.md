@@ -43,11 +43,24 @@ Footer container authoring (Footer Section, child items, `/footer` page): see [.
 
 CI uploads `storybook-static` as the `storybook-qa` artifact on every push.
 
+### Hosted Storybook (EDS branch)
+
+Every push to `main` runs `npm run build-storybook:eds` (output in `sb/`, gitignored) and force-pushes `main` plus that build to the `storybook` branch. AEM Code Sync serves it at:
+
+https://storybook--edspdp--rahul-chawla-akqa.aem.page/sb/index.html
+
+- Always link to `/sb/index.html`. The bare `/sb/` URL has no extension, so EDS looks for an authored page there and returns 404.
+- Never commit to the `storybook` branch by hand. CI overwrites it on the next push to `main`.
+- The EDS build doesn't copy `blocks/`, `scripts/`, `fonts/` or `icons/`. Stories load those from the branch root, so they render the same code as the site.
+- Fixture paths in stories must be relative (`./storybook-fixtures/...`) so they resolve under `/sb/`.
+- Keep it out of search engines: set `X-Robots-Tag: noindex` for `/sb/**` in the site's custom headers config (Admin API `/config/{org}/sites/{site}/headers.json`). This setting lives outside the repo.
+
 ## Quick reference
 
 ```bash
 npm run storybook            # block Storybook on :6006
 npm run build-storybook      # static QA build
+npm run build-storybook:eds  # EDS-hosted build in sb/ (CI pushes it to the storybook branch)
 npm run storybook:preview    # serve storybook-static on :6007
 npm run dev          # compose proxy on :4000 plus aem up on :3000
 npm run test:ssr     # composition, block decoration and admin job tests

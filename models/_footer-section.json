@@ -33,14 +33,7 @@
           "name": "backgroundImage",
           "label": "Background Image",
           "multi": false,
-          "description": "Full-bleed image behind footer content"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "backgroundImageAlt",
-          "label": "Background Image Alt",
-          "value": ""
+          "description": "Full-bleed image behind footer content. Decorative, so it needs no alt text."
         }
       ]
     }

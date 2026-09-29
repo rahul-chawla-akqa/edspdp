@@ -2,6 +2,17 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 
+const fixturesDir = { from: '../storybook/fixtures/static', to: '/storybook-fixtures' };
+
+// The EDS build is served from the `storybook` branch, which already has these at the root.
+const staticDirs = process.env.STORYBOOK_EDS ? [fixturesDir] : [
+  { from: '../icons', to: '/icons' },
+  { from: '../blocks', to: '/blocks' },
+  { from: '../scripts', to: '/scripts' },
+  { from: '../fonts', to: '/fonts' },
+  fixturesDir,
+];
+
 /** @type { import('@storybook/html-vite').StorybookConfig } */
 module.exports = {
   stories: ['../storybook/stories/**/*.stories.js'],
@@ -14,13 +25,7 @@ module.exports = {
     name: '@storybook/html-vite',
     options: {},
   },
-  staticDirs: [
-    { from: '../icons', to: '/icons' },
-    { from: '../blocks', to: '/blocks' },
-    { from: '../scripts', to: '/scripts' },
-    { from: '../fonts', to: '/fonts' },
-    { from: '../storybook/fixtures/static', to: '/storybook-fixtures' },
-  ],
+  staticDirs,
   async viteFinal(config) {
     config.server = config.server || {};
     config.server.fs = {

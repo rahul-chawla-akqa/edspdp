@@ -34,10 +34,10 @@ export const product = {
     },
   ],
   images: [
-    '/storybook-fixtures/product-1.svg',
-    '/storybook-fixtures/product-2.svg',
+    './storybook-fixtures/product-1.svg',
+    './storybook-fixtures/product-2.svg',
   ],
-  thumbnail: '/storybook-fixtures/product-1.svg',
+  thumbnail: './storybook-fixtures/product-1.svg',
 };
 
 export const post = {

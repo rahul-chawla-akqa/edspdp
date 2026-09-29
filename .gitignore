@@ -27,6 +27,8 @@ drafts/
 
 tests/
 storybook-static/
+# EDS Storybook build; CI force-adds it on the `storybook` branch only.
+sb/
 
 # Ensure these files are tracked
 !CLAUDE.md

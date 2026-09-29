@@ -156,15 +156,36 @@ test('the section background image becomes a custom property on the shell', asyn
   const { dom, previous } = installDom(authoredFooter());
   const { applySectionBackground } = await loadLayout();
 
+  // the backend lowercases the section field into a data attribute
   const section = dom.window.document.querySelector('.section');
-  section.dataset.backgroundImage = 'https://example.com/bg.jpg';
+  section.setAttribute('data-backgroundimage', 'https://example.com/bg.jpg');
   const shell = dom.window.document.createElement('div');
   applySectionBackground(section, shell);
 
   assert.equal(
     shell.style.getPropertyValue('--footer-background-image'),
-    'url("https://example.com/bg.jpg")',
+    'url("/bg.jpg")',
   );
+
+  // the delivered rendition is widened, and a same-host asset drops the origin so the
+  // scheme of the delivered reference cannot break the request
+  section.setAttribute('data-backgroundimage', 'https://example.com/media_abc.jpg?width=750&format=jpg&optimize=medium');
+  applySectionBackground(section, shell);
+  assert.equal(
+    shell.style.getPropertyValue('--footer-background-image'),
+    'url("/media_abc.jpg?width=1600&format=jpg&optimize=medium")',
+  );
+
+  restoreGlobals(previous);
+});
+
+test('a section without a background image leaves the shell untouched', async () => {
+  const { dom, previous } = installDom(authoredFooter());
+  const { applySectionBackground } = await loadLayout();
+
+  const shell = dom.window.document.createElement('div');
+  applySectionBackground(dom.window.document.querySelector('.section'), shell);
+  assert.equal(shell.getAttribute('style'), null);
 
   restoreGlobals(previous);
 });

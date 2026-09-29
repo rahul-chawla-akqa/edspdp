@@ -143,10 +143,33 @@ function buildSocial(row) {
   return social;
 }
 
+const BACKGROUND_WIDTH = '1600';
+
+/**
+ * The section reference is delivered with the default 750px rendition, which is too small
+ * for a full-bleed background, so ask the asset pipeline for a wider one. The reference is
+ * also absolute, and its scheme can differ from the page's (the local dev server is served
+ * over http), so same-host assets are kept relative to the page.
+ * @param {string} src delivered asset URL
+ * @returns {string} background-sized URL for the current origin
+ */
+function backgroundRendition(src) {
+  try {
+    const url = new URL(src, window.location.href);
+    if (url.searchParams.has('width')) url.searchParams.set('width', BACKGROUND_WIDTH);
+    if (url.hostname === window.location.hostname) return `${url.pathname}${url.search}`;
+    return url.href;
+  } catch (error) {
+    return src;
+  }
+}
+
 function applySectionBackground(section, shell) {
-  const background = section?.dataset?.backgroundImage;
+  if (!section) return;
+  // the section model is delivered as lowercased data attributes on the section element
+  const background = section.dataset.backgroundimage || section.dataset.backgroundImage;
   if (!background) return;
-  shell.style.setProperty('--footer-background-image', `url("${background}")`);
+  shell.style.setProperty('--footer-background-image', `url("${backgroundRendition(background)}")`);
 }
 
 /**
