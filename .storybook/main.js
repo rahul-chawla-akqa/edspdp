@@ -21,7 +21,12 @@ module.exports = {
     { from: '../fonts', to: '/fonts' },
     { from: '../storybook/fixtures/static', to: '/storybook-fixtures' },
   ],
-  async viteFinal(config) {
+  async viteFinal(config, { configType }) {
+    if (configType === 'PRODUCTION') {
+      config.base = '/tools/storybook/';
+      config.build = config.build || {};
+      config.build.sourcemap = false;
+    }
     config.server = config.server || {};
     config.server.fs = {
       ...(config.server.fs || {}),

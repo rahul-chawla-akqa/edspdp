@@ -28,10 +28,10 @@ export function link(href, text, title = '') {
 }
 
 export const images = {
-  hero: '/storybook-fixtures/hero.svg',
-  card1: '/storybook-fixtures/card-1.svg',
-  card2: '/storybook-fixtures/card-2.svg',
-  card3: '/storybook-fixtures/card-3.svg',
-  product1: '/storybook-fixtures/product-1.svg',
-  product2: '/storybook-fixtures/product-2.svg',
+  hero: 'storybook-fixtures/hero.svg',
+  card1: 'storybook-fixtures/card-1.svg',
+  card2: 'storybook-fixtures/card-2.svg',
+  card3: 'storybook-fixtures/card-3.svg',
+  product1: 'storybook-fixtures/product-1.svg',
+  product2: 'storybook-fixtures/product-2.svg',
 };
