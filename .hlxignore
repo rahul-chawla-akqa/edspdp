@@ -18,3 +18,6 @@ lighthouse-reports/
 .storybook/*
 storybook/*
 storybook-static/**
+# `_*` above would hide Vite chunks such as `_shared-*.js` inside the static build.
+!tools/storybook/
+!tools/storybook/**
