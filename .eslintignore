@@ -5,3 +5,4 @@ dompurify.min.js
 # App Builder webpack output; generated bundles are not source.
 dist
 storybook-static
+tools/storybook

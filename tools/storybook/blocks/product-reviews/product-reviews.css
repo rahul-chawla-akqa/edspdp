@@ -1,0 +1,93 @@
+.product-reviews-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding-bottom: 16px;
+}
+
+.product-reviews-summary-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.product-reviews-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.product-reviews-list li {
+  padding: 16px;
+  background-color: var(--light-color);
+}
+
+.product-reviews-list li + li {
+  margin-top: 8px;
+}
+
+.product-reviews-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 12px;
+}
+
+/* Plain `p` rules are grouped ahead of their `:first-child` overrides to keep
+   stylelint's no-descending-specificity ordering satisfied. */
+.product-reviews-summary-label p {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--body-font-size-xs);
+  color: var(--dark-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.product-reviews-summary-value p {
+  margin: 0;
+  font-size: var(--body-font-size-xs);
+  color: var(--dark-color);
+}
+
+.product-reviews-meta p {
+  margin: 0;
+  font-size: var(--body-font-size-xs);
+  color: var(--dark-color);
+}
+
+.product-reviews-summary-value p:first-child {
+  font-size: var(--heading-font-size-s);
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.product-reviews-meta p:first-child {
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.product-reviews-body blockquote {
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: var(--body-font-size-s);
+  color: var(--text-color);
+}
+
+@media (width >= 900px) {
+  .product-reviews-list li {
+    display: grid;
+    grid-template-columns: minmax(180px, 25%) 1fr;
+    gap: 16px;
+  }
+
+  .product-reviews-meta {
+    display: block;
+  }
+
+  .product-reviews-body blockquote {
+    margin-top: 0;
+  }
+}

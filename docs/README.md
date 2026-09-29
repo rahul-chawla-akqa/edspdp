@@ -28,9 +28,14 @@ Isolated EDS blocks for local review and QA. Stories wrap authored markup, run `
 
 ```bash
 npm run storybook            # http://localhost:6006
-npm run build-storybook      # static build in storybook-static/
+npm run build-storybook      # static build in tools/storybook/
 npm run storybook:preview    # serve the static build on :6007 (keeps .html deep links)
 ```
+
+Committed output is served by AEM Code Sync. HTML from the code repo keeps its extension:
+
+- Preview: `https://{branch}--edspdp--rahul-chawla-akqa.aem.page/tools/storybook/index.html`
+- Live (after merge to `main`): `https://main--edspdp--rahul-chawla-akqa.aem.live/tools/storybook/index.html`
 
 Toolbar:
 
@@ -39,14 +44,14 @@ Toolbar:
 
 When you add a block, add `storybook/stories/{name}.stories.js` that supplies pre-decoration row markup and calls the block `decorate()` function. Put fixtures in `storybook/fixtures/`. Keep stories out of `blocks/` so AEM Code Sync does not serve them.
 
-CI uploads `storybook-static` as the `storybook-qa` artifact on every push.
+CI rebuilds `tools/storybook`, fails if that output differs from the committed files, and uploads it as the `storybook-qa` artifact on every push.
 
 ## Quick reference
 
 ```bash
 npm run storybook            # block Storybook on :6006
-npm run build-storybook      # static QA build
-npm run storybook:preview    # serve storybook-static on :6007
+npm run build-storybook      # static QA build in tools/storybook/
+npm run storybook:preview    # serve tools/storybook on :6007
 npm run dev          # compose proxy on :4000 plus aem up on :3000
 npm run test:ssr     # composition, block decoration and admin job tests
 npm run lint

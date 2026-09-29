@@ -28,8 +28,15 @@ jobs:
     - run: npm ci
     - name: Build Storybook
       run: npm run build-storybook
+    - name: Fail if committed Storybook build is stale
+      run: |
+        if [ -n "$(git status --porcelain -- tools/storybook)" ]; then
+          git status --porcelain -- tools/storybook
+          echo "Storybook build drifted from tools/storybook. Run npm run build-storybook and commit the result."
+          exit 1
+        fi
     - name: Upload Storybook QA build
       uses: actions/upload-artifact@v4
       with:
         name: storybook-qa
-        path: storybook-static
+        path: tools/storybook

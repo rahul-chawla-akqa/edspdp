@@ -21,7 +21,23 @@ module.exports = {
     { from: '../fonts', to: '/fonts' },
     { from: '../storybook/fixtures/static', to: '/storybook-fixtures' },
   ],
-  async viteFinal(config) {
+  async viteFinal(config, { configType }) {
+    if (configType === 'PRODUCTION') {
+      config.base = '/tools/storybook/';
+      config.build = config.build || {};
+      config.build.sourcemap = false;
+      // .hlxignore drops any filename starting with `_`. Vite's shared chunks
+      // (`_shared-*.js`, `_commonjsHelpers-*.js`) would 404 on the code bus.
+      config.build.rollupOptions = config.build.rollupOptions || {};
+      const nameChunk = (entry = {}) => ({
+        ...entry,
+        chunkFileNames: 'assets/sb-[name]-[hash].js',
+      });
+      const { output } = config.build.rollupOptions;
+      config.build.rollupOptions.output = Array.isArray(output)
+        ? output.map((entry) => nameChunk(entry))
+        : nameChunk(output);
+    }
     config.server = config.server || {};
     config.server.fs = {
       ...(config.server.fs || {}),
