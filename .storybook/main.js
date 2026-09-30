@@ -2,15 +2,17 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 
-const fixturesDir = { from: '../storybook/fixtures/static', to: '/storybook-fixtures' };
+// Path the build is served from, e.g. `/sb/pr-42/` on the shared `sb-previews` branch.
+// Runtime block/icon loads are prefixed with it through `window.hlx.codeBasePath`.
+const base = `/${(process.env.STORYBOOK_BASE || '/').replace(/^\/+|\/+$/g, '')}/`.replace('//', '/');
 
-// The EDS build is served from the `storybook` branch, which already has these at the root.
-const staticDirs = process.env.STORYBOOK_EDS ? [fixturesDir] : [
+// Every build ships its own copy of these so it stays self-contained under `base`.
+const staticDirs = [
   { from: '../icons', to: '/icons' },
   { from: '../blocks', to: '/blocks' },
   { from: '../scripts', to: '/scripts' },
   { from: '../fonts', to: '/fonts' },
-  fixturesDir,
+  { from: '../storybook/fixtures/static', to: '/storybook-fixtures' },
 ];
 
 /** @type { import('@storybook/html-vite').StorybookConfig } */
@@ -26,6 +28,7 @@ module.exports = {
     options: {},
   },
   staticDirs,
+  previewHead: (head) => head.replace(/%STORYBOOK_BASE%/g, base),
   async viteFinal(config) {
     config.server = config.server || {};
     config.server.fs = {

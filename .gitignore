@@ -27,7 +27,7 @@ drafts/
 
 tests/
 storybook-static/
-# EDS Storybook build; CI force-adds it on the `storybook` branch only.
+# EDS Storybook build; CI force-adds it on the `storybook`, `storybook-develop` and `sb-previews` branches only.
 sb/
 
 # Ensure these files are tracked

@@ -3,6 +3,8 @@ on:
   push:
     branches-ignore:
       - storybook
+      - storybook-develop
+      - sb-previews
 
 jobs:
   build:
@@ -20,33 +22,20 @@ jobs:
     - name: Test overlay composer
       run: npm run test:ssr
 
-  storybook:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v6
-    - name: Use Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: 24
-    - run: npm ci
-    - name: Build Storybook
-      run: npm run build-storybook
-    - name: Upload Storybook QA build
-      uses: actions/upload-artifact@v4
-      with:
-        name: storybook-qa
-        path: storybook-static
-
-  # Served by AEM Code Sync at https://storybook--edspdp--rahul-chawla-akqa.aem.page/sb/index.html
+  # main    -> https://storybook--edspdp--rahul-chawla-akqa.aem.page/sb/index.html
+  # develop -> https://storybook-develop--edspdp--rahul-chawla-akqa.aem.page/sb/index.html
   storybook-deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
     concurrency:
-      group: storybook-deploy
+      group: storybook-deploy-${{ github.ref_name }}
       cancel-in-progress: true
+    env:
+      STORYBOOK_BASE: /sb/
+      TARGET_BRANCH: ${{ github.ref_name == 'main' && 'storybook' || 'storybook-develop' }}
     steps:
     - uses: actions/checkout@v6
     - name: Use Node.js
@@ -56,11 +45,11 @@ jobs:
     - run: npm ci
     - name: Build Storybook for EDS
       run: npm run build-storybook:eds
-    - name: Push main plus build to the storybook branch
+    - name: Push branch plus build to the Storybook branch
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git checkout -B storybook
+        git checkout -B "$TARGET_BRANCH"
         git add -f sb
         git commit --no-verify -m "chore: storybook build ${GITHUB_SHA}"
-        git push --force origin storybook
+        git push --force origin "$TARGET_BRANCH"
