@@ -13,6 +13,7 @@ import {
 import { bindOpenModalOnClick } from './open-modal.js';
 import { decorateButton } from './ui/button.js';
 import { decorateIcons } from './ui/icon.js';
+import { fetchPlaceholders } from './placeholders.js';
 
 // brand applied when a page carries no `theme` metadata, see styles/styles.css
 const DEFAULT_THEME = 'apollo';
@@ -155,6 +156,7 @@ export async function decorateMain(main) {
  */
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
+  window.hlx.placeholdersReady = fetchPlaceholders();
   decorateTemplateAndTheme();
   if (!getMetadata('theme')) document.body.classList.add(DEFAULT_THEME);
   const main = doc.querySelector('main');

@@ -557,9 +557,11 @@ async function loadBlock(block) {
       const decorationComplete = new Promise((resolve) => {
         (async () => {
           try {
-            const mod = await import(
-              `${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.js`
-            );
+            const placeholdersReady = window.hlx?.placeholdersReady || Promise.resolve();
+            const [mod] = await Promise.all([
+              import(`${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.js`),
+              placeholdersReady,
+            ]);
             if (mod.default) {
               await mod.default(block);
             }
