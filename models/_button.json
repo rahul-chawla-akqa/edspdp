@@ -21,23 +21,28 @@
       "fields": [
         {
           "component": "aem-content",
+          "valueType": "string",
           "name": "link",
           "label": "Link"
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "linkText",
           "label": "Text"
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "linkTitle",
           "label": "Title"
         },
         {
           "component": "select",
+          "valueType": "string",
           "name": "linkType",
           "label": "Type",
+          "description": "Size, icon and on-dark treatment come from the section or block the button sits in.",
           "options": [
             {
               "name": "default",
@@ -50,6 +55,10 @@
             {
               "name": "secondary",
               "value": "secondary"
+            },
+            {
+              "name": "text",
+              "value": "text"
             }
           ]
         }

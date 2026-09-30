@@ -33,6 +33,10 @@
             {
               "name": "Highlight",
               "value": "highlight"
+            },
+            {
+              "name": "Dark",
+              "value": "dark"
             }
           ]
         }
@@ -50,6 +54,7 @@
         "hero",
         "cards",
         "card-gallery",
+        "bento-grid",
         "search-button",
         "columns",
         "fragment",

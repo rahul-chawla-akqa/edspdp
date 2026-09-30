@@ -50,22 +50,18 @@ main .search-button .search-button-go {
 
 main .search-button .search-button-search {
   background-color: var(--search-button-well);
+  color: var(--search-button-icon);
 }
 
 main .search-button .search-button-go {
   background-color: var(--search-button-accent);
+  color: var(--search-button-icon);
 }
 
 main .search-button .search-button-search .icon,
 main .search-button .search-button-go .icon {
   width: 20px;
   height: 20px;
-}
-
-main .search-button .icon img {
-  width: 100%;
-  height: 100%;
-  filter: brightness(0) invert(1);
 }
 
 main .search-button .search-button-label {

@@ -40,7 +40,7 @@ export async function renderBlock({
   }
 
   try {
-    await loadCSS(`/blocks/${name}/${name}.css`);
+    await loadCSS(`${window.hlx.codeBasePath}/blocks/${name}/${name}.css`);
   } catch {
     // Some blocks ship empty CSS; stories still decorate.
   }

@@ -106,23 +106,28 @@
     "fields": [
       {
         "component": "aem-content",
+        "valueType": "string",
         "name": "link",
         "label": "Link"
       },
       {
         "component": "text",
+        "valueType": "string",
         "name": "linkText",
         "label": "Text"
       },
       {
         "component": "text",
+        "valueType": "string",
         "name": "linkTitle",
         "label": "Title"
       },
       {
         "component": "select",
+        "valueType": "string",
         "name": "linkType",
         "label": "Type",
+        "description": "Size, icon and on-dark treatment come from the section or block the button sits in.",
         "options": [
           {
             "name": "default",
@@ -135,6 +140,10 @@
           {
             "name": "secondary",
             "value": "secondary"
+          },
+          {
+            "name": "text",
+            "value": "text"
           }
         ]
       }
@@ -157,8 +166,177 @@
           {
             "name": "Highlight",
             "value": "highlight"
+          },
+          {
+            "name": "Dark",
+            "value": "dark"
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "footer-section",
+    "fields": [
+      {
+        "component": "text",
+        "name": "name",
+        "label": "Section Name",
+        "description": "The label shown for this section in the Content Tree"
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "backgroundImage",
+        "label": "Background Image",
+        "multi": false,
+        "description": "Full-bleed image behind footer content. Decorative, so it needs no alt text."
+      }
+    ]
+  },
+  {
+    "id": "bento-grid",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "description": "Small label above the heading, for example \"Latest News\""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "headingType",
+        "label": "Heading Level",
+        "value": "h2",
+        "options": [
+          {
+            "name": "H2",
+            "value": "h2"
+          },
+          {
+            "name": "H3",
+            "value": "h3"
+          },
+          {
+            "name": "H4",
+            "value": "h4"
+          }
+        ]
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Header Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkText",
+        "label": "Header Link Text",
+        "value": "Discover All"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "classes",
+        "label": "Layout",
+        "value": "layout-equal-4",
+        "description": "Card count each layout is designed for: Equal 4-up = 4, Equal 3-up = 3, News 5-up = 5, Featured 6-up = 6. Extra cards wrap onto new rows.",
+        "options": [
+          {
+            "name": "Equal 4-up (portrait)",
+            "value": "layout-equal-4"
+          },
+          {
+            "name": "Equal 3-up (landscape)",
+            "value": "layout-equal-3"
+          },
+          {
+            "name": "News 5-up (tall centre)",
+            "value": "layout-news-5"
+          },
+          {
+            "name": "Featured 6-up (large first)",
+            "value": "layout-featured-6"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bento-grid-item",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Alt Text",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cardText_chip",
+        "label": "Category Chip",
+        "description": "Optional pill shown in the top left of the card"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cardText_title",
+        "label": "Title"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "cardText_titleType",
+        "label": "Title Level",
+        "value": "h3",
+        "options": [
+          {
+            "name": "H3",
+            "value": "h3"
+          },
+          {
+            "name": "H4",
+            "value": "h4"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cardText_date",
+        "label": "Date",
+        "description": "Optional. A parsable date such as 17 July 2026 renders as a calendar badge in the Equal 3-up layout, otherwise it is shown as text."
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkText",
+        "label": "Link Text"
       }
     ]
   },
@@ -306,6 +484,212 @@
             "value": "false"
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "footer-nav-column",
+    "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "type",
+        "label": "Item Type",
+        "value": "nav-column",
+        "description": "Set automatically. Do not change.",
+        "options": [
+          {
+            "name": "Nav Column",
+            "value": "nav-column"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Column Heading",
+        "description": "For example THE PROGRESS"
+      },
+      {
+        "component": "container",
+        "name": "links",
+        "label": "Links",
+        "multi": true,
+        "collapsible": true,
+        "fields": [
+          {
+            "component": "aem-content",
+            "valueType": "string",
+            "name": "link",
+            "label": "Link"
+          },
+          {
+            "component": "text",
+            "valueType": "string",
+            "name": "linkText",
+            "label": "Link Text"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "footer-logo",
+    "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "type",
+        "label": "Item Type",
+        "value": "logo",
+        "description": "Set automatically. Do not change.",
+        "options": [
+          {
+            "name": "Logo",
+            "value": "logo"
+          }
+        ]
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "logo",
+        "label": "Logo",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "logoAlt",
+        "label": "Logo Alt",
+        "value": "Apollo Tyres Ltd"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "logoLink",
+        "label": "Logo Link",
+        "description": "Optional. Defaults to the site home page when empty."
+      }
+    ]
+  },
+  {
+    "id": "footer-legal",
+    "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "type",
+        "label": "Item Type",
+        "value": "legal",
+        "description": "Set automatically. Do not change.",
+        "options": [
+          {
+            "name": "Legal",
+            "value": "legal"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "copyright",
+        "label": "Copyright",
+        "value": "© 2027 Apollo Tyres Ltd"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "legalLinks_privacyLink",
+        "label": "Privacy Notice Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "legalLinks_privacyLinkText",
+        "label": "Privacy Notice Text",
+        "value": "Privacy Notice"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "legalLinks_termsLink",
+        "label": "Terms & Conditions Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "legalLinks_termsLinkText",
+        "label": "Terms & Conditions Text",
+        "value": "Terms & Conditions"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "legalLinks_cookieLink",
+        "label": "Cookie Notice Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "legalLinks_cookieLinkText",
+        "label": "Cookie Notice Text",
+        "value": "Cookie Notice"
+      }
+    ]
+  },
+  {
+    "id": "footer-social",
+    "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "type",
+        "label": "Item Type",
+        "value": "social",
+        "description": "Set automatically. Do not change.",
+        "options": [
+          {
+            "name": "Social",
+            "value": "social"
+          }
+        ]
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "socialLinks_facebook",
+        "label": "Facebook URL",
+        "description": "Leave empty to hide the Facebook link"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "socialLinks_x",
+        "label": "X URL",
+        "description": "Leave empty to hide the X link"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "socialLinks_instagram",
+        "label": "Instagram URL",
+        "description": "Leave empty to hide the Instagram link"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "socialLinks_linkedin",
+        "label": "LinkedIn URL",
+        "description": "Leave empty to hide the LinkedIn link"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "socialLinks_youtube",
+        "label": "YouTube URL",
+        "description": "Leave empty to hide the YouTube link"
       }
     ]
   },

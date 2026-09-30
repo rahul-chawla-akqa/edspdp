@@ -1,8 +1,15 @@
 <script>window.IS_STORYBOOK = true;</script>
+<!-- Never executed (text/plain). aem.js setup() derives window.hlx.codeBasePath from this src. -->
+<script type="text/plain" src="%STORYBOOK_BASE%scripts/scripts.js"></script>
 <style>
   /* EDS hides the document until scripts add `appear`. Storybook canvas must stay visible. */
   body.appear,
   body.sb-show-main {
     display: block !important;
+  }
+
+  /* Storybook-only canvas inset; does not affect production pages. */
+  #storybook-root main {
+    padding: 1rem;
   }
 </style>

@@ -52,4 +52,4 @@ jobs:
         git checkout -B "$TARGET_BRANCH"
         git add -f sb
         git commit --no-verify -m "chore: storybook build ${GITHUB_SHA}"
-        git push --force --no-verify origin "$TARGET_BRANCH"
+        git push --force origin "$TARGET_BRANCH"

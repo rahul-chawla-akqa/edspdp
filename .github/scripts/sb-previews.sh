@@ -84,7 +84,7 @@ for attempt in 1 2 3 4 5; do
     exit 0
   fi
   git commit --quiet --no-verify -m "$MESSAGE"
-  if git push --quiet --no-verify origin "HEAD:refs/heads/$BRANCH"; then
+  if git push --quiet origin "HEAD:refs/heads/$BRANCH"; then
     echo "Pushed: $MESSAGE"
     exit 0
   fi

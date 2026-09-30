@@ -18,3 +18,6 @@ lighthouse-reports/
 .storybook/*
 storybook/*
 storybook-static/**
+
+# Hosted Storybook build on the `storybook` branch; its chunks can start with `_`.
+!sb/**

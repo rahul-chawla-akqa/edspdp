@@ -34,18 +34,40 @@ npm run storybook:preview    # serve the static build on :6007 (keeps .html deep
 
 Toolbar:
 
-- **Theme:** `default`, `corporate`, `retail` (adds the same class on `document.body` as EDS theme metadata)
+- **Theme:** `apollo`, `vredestein`, `corporate` (adds the same class on `document.body` as EDS theme metadata)
 - **Viewport:** Mobile (390px, ≤600px) or Desktop (1280px, >600px). Each block also has Mobile and Desktop stories for deep links.
 
 When you add a block, add `storybook/stories/{name}.stories.js` that supplies pre-decoration row markup and calls the block `decorate()` function. Put fixtures in `storybook/fixtures/`. Keep stories out of `blocks/` so AEM Code Sync does not serve them.
 
-CI uploads `storybook-static` as the `storybook-qa` artifact on every push.
+Footer container authoring (Footer Section, child items, `/footer` page): see [../blocks/footer/AUTHORING.md](../blocks/footer/AUTHORING.md).
+
+### Hosted Storybook (EDS branches)
+
+Don't commit Storybook output. CI runs `npm run build-storybook:eds` (output in `sb/`, gitignored) and pushes it to a generated branch that AEM Code Sync serves:
+
+| Source | Generated branch | URL |
+|--------|------------------|-----|
+| Pull request #n into `develop` or `main` | `sb-previews` (folder `sb/pr-<n>/`) | https://sb-previews--edspdp--rahul-chawla-akqa.aem.page/sb/pr-{n}/index.html |
+| Push to `develop` | `storybook-develop` | https://storybook-develop--edspdp--rahul-chawla-akqa.aem.page/sb/index.html |
+| Push to `main` | `storybook` | https://storybook--edspdp--rahul-chawla-akqa.aem.page/sb/index.html |
+
+- **PR previews** ([storybook-preview.yaml](../.github/workflows/storybook-preview.yaml)): run when a non-draft PR changes blocks, scripts, styles, icons, fonts or Storybook files. Lint runs first, and the preview link is kept up to date in a single PR comment. Fork PRs only get a build artifact.
+- **Cleanup** ([storybook-cleanup.yaml](../.github/workflows/storybook-cleanup.yaml)): removes `sb/pr-<n>/` when the PR closes, merged or not. A weekly job removes previews of any other closed PRs.
+- **`develop` and `main`** ([main.yaml](../.github/workflows/main.yaml)): the `storybook-deploy` job force-pushes the branch plus its build after lint and tests pass.
+- Always link to `.../index.html`. The bare `/sb/` URL has no extension, so EDS looks for an authored page there and returns 404.
+- Never commit to the generated branches by hand. CI overwrites them.
+- Each build is self-contained: it ships its own copy of `blocks/`, `scripts/`, `fonts/` and `icons/`. `STORYBOOK_BASE` (default `/sb/`) sets the folder the build is served from, and `aem.js` derives `window.hlx.codeBasePath` from it, so blocks and icons load from that folder.
+- Fixture paths in stories must be relative (`./storybook-fixtures/...`) so they resolve under any base.
+- Load block assets through `window.hlx.codeBasePath`, never a root path like `/blocks/...`, or they break in PR previews.
+- The preview check is path-filtered, so don't make it a required status check or PRs that don't touch those paths will wait on it forever. Require the lint check from `main.yaml` instead.
+- Keep it out of search engines: set `X-Robots-Tag: noindex` for `/sb/**` in the site's custom headers config (Admin API `/config/{org}/sites/{site}/headers.json`). This setting lives outside the repo.
 
 ## Quick reference
 
 ```bash
 npm run storybook            # block Storybook on :6006
 npm run build-storybook      # static QA build
+npm run build-storybook:eds  # EDS-hosted build in sb/ (CI publishes it; STORYBOOK_BASE sets the folder)
 npm run storybook:preview    # serve storybook-static on :6007
 npm run dev          # compose proxy on :4000 plus aem up on :3000
 npm run test:ssr     # composition, block decoration and admin job tests

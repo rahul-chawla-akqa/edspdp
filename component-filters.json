@@ -2,7 +2,8 @@
   {
     "id": "main",
     "components": [
-      "section"
+      "section",
+      "footer-section"
     ]
   },
   {
@@ -15,6 +16,7 @@
       "hero",
       "cards",
       "card-gallery",
+      "bento-grid",
       "search-button",
       "columns",
       "fragment",
@@ -25,6 +27,18 @@
       "carousel",
       "feature-flags",
       "form"
+    ]
+  },
+  {
+    "id": "footer-section",
+    "components": [
+      "footer"
+    ]
+  },
+  {
+    "id": "bento-grid",
+    "components": [
+      "bento-grid-item"
     ]
   },
   {
@@ -58,6 +72,15 @@
       "image",
       "button",
       "title"
+    ]
+  },
+  {
+    "id": "footer",
+    "components": [
+      "footer-nav-column",
+      "footer-logo",
+      "footer-legal",
+      "footer-social"
     ]
   },
   {

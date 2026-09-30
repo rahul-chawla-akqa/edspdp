@@ -1,7 +1,6 @@
 import {
   decorateBlock,
   decorateBlocks,
-  decorateIcons,
   decorateSections,
   loadBlock,
   loadScript,
@@ -9,6 +8,7 @@ import {
 } from './aem.js';
 import { decorateRichtext } from './editor-support-rte.js';
 import { decorateButtons, decorateMain } from './scripts.js';
+import { decorateIcons } from './ui/icon.js';
 
 let promiseChanges$ = Promise.resolve();
 
@@ -40,7 +40,8 @@ async function applyChanges(event) {
       if (!newMain) return false;
       newMain.style.display = 'none';
       element.insertAdjacentElement('afterend', newMain);
-      decorateMain(newMain);
+      await decorateMain(newMain);
+      await decorateIcons(newMain);
       decorateRichtext(newMain);
       await loadSections(newMain);
       element.remove();
@@ -57,8 +58,8 @@ async function applyChanges(event) {
       if (newBlock) {
         newBlock.style.display = 'none';
         block.insertAdjacentElement('afterend', newBlock);
-        decorateButtons(newBlock);
-        decorateIcons(newBlock);
+        await decorateButtons(newBlock);
+        await decorateIcons(newBlock);
         decorateBlock(newBlock);
         decorateRichtext(newBlock);
         await loadBlock(newBlock);
@@ -75,8 +76,8 @@ async function applyChanges(event) {
           const [newSection] = newElements;
           newSection.style.display = 'none';
           element.insertAdjacentElement('afterend', newSection);
-          decorateButtons(newSection);
-          decorateIcons(newSection);
+          await decorateButtons(newSection);
+          await decorateIcons(newSection);
           decorateRichtext(newSection);
           decorateSections(parentElement);
           decorateBlocks(parentElement);
@@ -85,8 +86,8 @@ async function applyChanges(event) {
           newSection.style.display = null;
         } else {
           element.replaceWith(...newElements);
-          decorateButtons(parentElement);
-          decorateIcons(parentElement);
+          await decorateButtons(parentElement);
+          await decorateIcons(parentElement);
           decorateRichtext(parentElement);
         }
         return true;
