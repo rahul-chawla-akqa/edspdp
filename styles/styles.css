@@ -327,8 +327,8 @@ button.button:disabled {
 a.button.primary,
 button.button.primary {
   border-color: var(--text-color);
-  background-color: var(--text-color);
-  color: var(--background-color);
+  background-color: var(--vredestein-blue-500);
+  color: var(--apollo-50);
 }
 
 a.button.primary:hover,
