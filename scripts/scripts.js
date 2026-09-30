@@ -16,6 +16,7 @@ import { decorateIcons } from './ui/icon.js';
 
 // brand applied when a page carries no `theme` metadata, see styles/styles.css
 const DEFAULT_THEME = 'apollo';
+import { fetchPlaceholders } from './placeholders.js';
 
 /**
  * Moves all the attributes from a given elmenet to another given element.
@@ -155,6 +156,7 @@ export async function decorateMain(main) {
  */
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
+  window.hlx.placeholdersReady = fetchPlaceholders();
   decorateTemplateAndTheme();
   if (!getMetadata('theme')) document.body.classList.add(DEFAULT_THEME);
   const main = doc.querySelector('main');

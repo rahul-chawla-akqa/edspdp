@@ -170,6 +170,13 @@
           "name": "errorMessage",
           "label": "Error Message",
           "description": "Shown when the request fails or the endpoint returns a non-2xx status"
+        },
+        {
+          "component": "boolean",
+          "name": "classes_recaptcha",
+          "label": "Enable reCAPTCHA v3",
+          "description": "Uses the page or site reCAPTCHA key. Sends g-recaptcha-response with the JSON payload.",
+          "valueType": "boolean"
         }
       ]
     },

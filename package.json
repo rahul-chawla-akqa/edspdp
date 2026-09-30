@@ -28,7 +28,7 @@
     "psi": "node scripts/psi-audit.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static && cp storybook/serve.json storybook-static/serve.json",
-    "build-storybook:eds": "STORYBOOK_BASE=${STORYBOOK_BASE:-/sb/} storybook build -o sb",
+		"build-storybook:eds": "STORYBOOK_BASE=${STORYBOOK_BASE:-/sb/} storybook build -o sb",
     "storybook:preview": "npx --yes serve storybook-static -p 6007",
     "build:json": "npm-run-all -p build:json:models build:json:definitions build:json:filters",
     "build:json:models": "merge-json-cli -i \"models/_component-models.json\" -o \"component-models.json\"",
