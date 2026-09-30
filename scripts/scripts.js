@@ -14,10 +14,8 @@ import { bindOpenModalOnClick } from './open-modal.js';
 import { decorateButton } from './ui/button.js';
 import { decorateIcons } from './ui/icon.js';
 import { fetchPlaceholders } from './placeholders.js';
-
 // brand applied when a page carries no `theme` metadata, see styles/styles.css
 const DEFAULT_THEME = 'apollo';
-
 /**
  * Moves all the attributes from a given elmenet to another given element.
  * @param {Element} from the element to copy attributes from
