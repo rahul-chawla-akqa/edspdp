@@ -4,4 +4,8 @@ dompurify.min.js
 
 # App Builder webpack output; generated bundles are not source.
 dist
+
+# Storybook builds. CI commits sb/ to the generated branches, where the pre-push
+# hook would otherwise lint the minified bundles.
 storybook-static
+sb
